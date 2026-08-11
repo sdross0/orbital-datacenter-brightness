@@ -98,6 +98,8 @@ the count varies by only about 20 satellites over the ten-minute interval.
 |---|---|
 | `lsm.py` | photometry, orbit propagation, both brightness models |
 | `counts.py` | reproduces the table |
+| `spacing.py` | satellite-to-satellite spacing, three ways |
+| `sensitivity.py` | how the counts move under a systematic brightness error |
 | `ASSUMPTIONS.md` | every assumption, its provenance, and what is not modeled |
 
 The renderer that produces the video is not included. It carries texture and

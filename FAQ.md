@@ -175,6 +175,40 @@ satellites in total. This is a single proposed constellation roughly fifty
 times that number, concentrated in dawn-dusk orbits, which are exactly the
 orbits that stay sunlit while the ground below is dark.
 
+## With 500,000 satellites, doesn't a small brightness error get multiplied?
+
+Yes, and the amplification is very uneven. It lands almost entirely on the
+optimistic model.
+
+Shifting every satellite by a systematic error in magnitude and recounting
+at sunset:
+
+| systematic error | unmitigated | optimistic mitigated |
+|---|---|---|
+| 0.5 mag brighter | 68,283 | 18,570 |
+| 0.1 mag brighter | 66,771 | 12,716 |
+| as modeled | 66,316 | 11,518 |
+| 0.1 mag fainter | 65,848 | 10,210 |
+| 0.5 mag fainter | 63,656 | 6,364 |
+| 1.0 mag fainter | 59,035 | 3,026 |
+
+Locally that is about 445 satellites per 0.1 mag in the unmitigated case,
+0.7% of its count, against about 1,255 per 0.1 mag in the mitigated case,
+10.9% of its count.
+
+The reason is where each population sits relative to the naked-eye
+threshold. Unmitigated, the satellites are far brighter than V = 6, so
+moving the threshold slightly barely changes how many clear it. Mitigated,
+they sit right at the limit, so a small error sweeps a large fraction
+across it.
+
+The practical consequence is that the missing number matters most precisely
+where the outcome is most favourable. An AI1 magnitude good to a tenth of a
+magnitude would be worth far more than one good to half a magnitude, and
+either would be worth more than the range in this table.
+
+Run `sensitivity.py` to reproduce it.
+
 ## Isn't the simulation just tuned to look alarming?
 
 The counts are the claim, and they are reproducible from the code with
