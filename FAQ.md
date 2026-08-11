@@ -21,7 +21,7 @@ different shape.
 
 ## Musk said the radiator is knife-edge to the Sun. Doesn't that solve it?
 
-Reference is the video you can find at the [SpaceX Starmind site]( https://www.spacex.com/spacexai/starmind)
+Reference is the video you can find at the SpaceX Starmind site: https://www.spacex.com/spacexai/starmind
 
 It's a good design choice. The
 same description has the solar arrays held face-on to the Sun, and the
