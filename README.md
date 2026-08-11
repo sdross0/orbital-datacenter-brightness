@@ -90,19 +90,6 @@ tuned by eye for legibility. They are a presentation choice and carry no
 physical meaning. The counts above are the claim, and they are what is
 reproducible here.
 
-## Corrections to earlier versions
-
-<!-- SHANE: replace this block before making the repo public. Be specific,
-     one line per item, with what was wrong and what it is now. Being precise
-     about your own errors is what makes the rest of this trustworthy. -->
-
-- The earlier render used my own brightness assumption rather than a
-  published model. It is now Boley et al. eq 2, unchanged.
-- The earlier render used a simplified constellation geometry rather than
-  the groups as filed. It now uses Table 1 of the 29 May supplement.
-- I stated that Starlink V3 was in orbit. It has flown once on a suborbital
-  path and reentered. Corrected by Jonathan McDowell.
-
 ## License
 
 MIT for the code. Please cite the two papers above for the models, which are
