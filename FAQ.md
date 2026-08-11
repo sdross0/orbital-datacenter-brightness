@@ -21,12 +21,16 @@ different shape.
 
 ## Musk said the radiator is knife-edge to the Sun. Doesn't that solve it?
 
-It helps, and it is a real design choice in the right direction. But the
+Reference is the video you can find at the [SpaceX Starmind site]( https://www.spacex.com/spacexai/starmind)
+
+It's a good design choice. The
 same description has the solar arrays held face-on to the Sun, and the
 arrays are the large area. A radiator presenting its edge contributes very
 little reflecting surface either way. The array orientation is what drives
 the brightness, and pointing arrays at the Sun is what a data center in
 orbit has to do to make power.
+
+
 
 ## Why not use Starlink V3 data? Isn't that what AI1 is based on?
 
