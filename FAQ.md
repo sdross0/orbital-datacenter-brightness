@@ -23,6 +23,8 @@ different shape.
 
 Reference is the video you can find at the SpaceX Starmind site: https://www.spacex.com/spacexai/starmind
 
+[![Proposed Starmind AI1 satellite](assets/Starmind-AI1-satellite.png)](https://www.spacex.com/spacexai/starmind)
+
 It's a good design choice. The
 same description has the solar arrays held face-on to the Sun, and the
 arrays are the large area. A radiator presenting its edge contributes very
