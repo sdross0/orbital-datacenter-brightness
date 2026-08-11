@@ -10,6 +10,8 @@ Shane Ross, Aerospace and Ocean Engineering, Virginia Tech.
 
 *Illustrative ground-level rendering from Blacksburg, Virginia. Quantitative results are reported in the table below.*
 
+[Resulting video](https://youtu.be/LBZeKyh72q4)
+
 ## Brightness result
 
 These are instantaneous counts of satellites above the horizon with apparent 
@@ -40,7 +42,6 @@ unchanged in `lsm.observe`.
 
 Original model implementation and constellation files:
 https://github.com/norabolig/odc_sky_impacts
-
 
 **Mallama et al. 2023**, [arXiv:2306.06657](https://arxiv.org/abs/2306.06657).
 The measured on-orbit phase function of Starlink Gen2 Mini in its brightness
@@ -104,6 +105,30 @@ star catalog assets with their own licensing, and its exposure constants are
 tuned by eye for legibility. They are a presentation choice and carry no
 physical meaning. The video is an illustrative rendering. The reproducible 
 quantitative output of this repository is the visibility count table above.
+
+## Declaration of generative AI and AI-assisted technologies
+
+During the preparation of this work the author used Claude to assist with
+writing and refining the simulation code, cross-checking numerical results,
+and editing text for clarity. The author reviewed and verified all output,
+independently confirmed the numerical results against the published models
+they implement, and takes full responsibility for the content.
+
+To be specific about what this does and does not mean, because the
+distinction matters for a piece of work whose subject is a picture of the
+sky:
+
+- **The imagery is not generative AI.** Every satellite in the video sits at
+  a position produced by an orbit propagator, and its brightness comes from
+  a published photometric model evaluated at that position. Nothing was
+  drawn, imagined, upscaled, or inpainted by an image model.
+- **The physics is not mine and is not an AI's.** Both brightness models
+  come from manuscripts submitted to arXiv and are implemented unchanged. The
+  constellation geometry comes from SpaceX's filing. Where I have made an
+  assumption, it is listed in `ASSUMPTIONS.md` with its source.
+- **The numbers are checkable.** `counts.py` reproduces every figure quoted,
+  from `lsm.py`, using numpy alone. If the code is wrong, the error is
+  visible and fixable, and I would rather someone find it than not.
 
 ## License
 
