@@ -95,6 +95,66 @@ roughly 1% on-orbit failure rate seen in Starlink, where an uncontrolled
 satellite tumbles and can glint off 800 m2 of surface, and the real sky is
 brighter than either column here.
 
+## How far apart are the satellites from each other?
+
+Three answers, because it depends what you mean.
+
+**Along a single orbit**, roughly 10 km. Each plane holds about 4,200 to
+4,800 satellites spread evenly around a circumference of about 44,000 km.
+This number is solid: it follows directly from the filed counts and the
+orbit size.
+
+**Nearest neighbour in 3D**, a median of about 7 km. Treat this one as
+indicative rather than precise. The satellites here are given random
+phasing within each plane, because SpaceX has not published its phasing
+scheme. A real constellation is phased deliberately to control close
+approaches, so the low tail of this distribution is an artifact of the
+model and should not be read as a conjunction analysis.
+
+**How far apart they look**, about 0.8 degrees for two neighbours in the
+same train passing overhead. That is the 10 km along-track gap divided by
+the roughly 750 km range, so a little wider than the full Moon, which is
+0.52 degrees across.
+
+That figure shrinks toward the horizon, because the same 10 km is seen from
+farther away:
+
+| elevation | range | apparent separation |
+|---|---|---|
+| 90 deg | 750 km | 0.76 deg |
+| 45 deg | 1,010 km | 0.57 deg |
+| 30 deg | 1,316 km | 0.44 deg |
+| 10 deg | 2,262 km | 0.25 deg |
+| 0 deg | 3,183 km | 0.18 deg |
+
+This is why the rings read as continuous bands low in the sky and resolve
+into separate points higher up. It is geometry, not a rendering effect.
+
+Averaged a different way, over all satellites visible anywhere above the
+horizon at sunset, the density works out to 3.2 per square degree under the
+no-mitigation model and 0.56 under the mitigated one.
+
+Run `spacing.py` to reproduce these.
+
+## What about light pollution? Most people cannot see 1,612 stars anyway.
+
+True, and it does not work the way you might expect. Raising the sky
+background removes faint stars and faint satellites together, so the
+question is which loses more.
+
+| limiting magnitude | site | stars | no-mitigation | mitigated |
+|---|---|---|---|---|
+| V < 6 | dark rural | 1,612 | 66,316 | 11,518 |
+| V < 5 | outer suburb | 515 | 59,035 | 3,026 |
+| V < 4 | suburban | 165 | 46,270 | 206 |
+| V < 3 | inner city | 59 | 33,663 | 0 |
+
+Light pollution separates the two models rather than equalising them. The
+mitigated satellites are faint, so city light erases them completely. The
+unmitigated ones are bright enough to punch through, and in a city sky
+where only 59 stars remain you would be looking at roughly 33,000
+satellites, outnumbering the stars by more than 500 to 1.
+
 ## The filing says 1,000,000 satellites. Why simulate 500,000?
 
 The 500,000 here are the sun-synchronous groups, which is roughly half the
@@ -116,6 +176,16 @@ numpy alone. Both brightness models come from published papers and are
 implemented unchanged. The renderer's exposure and glow settings are a
 presentation choice with no physical meaning, which is why the renderer is
 not included and the count script is.
+
+## Was this made with AI?
+
+The imagery is not generative AI. Every satellite in the video is at a
+position computed from an orbit propagator, and its brightness comes from
+a published photometric model. Nothing in it was drawn, imagined, or
+inpainted by an image model.
+
+AI was used as a coding and writing assistant. See the declaration at the
+end of the README for the specifics.
 
 ## Are you against this being built?
 
