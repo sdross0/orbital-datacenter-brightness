@@ -1,23 +1,31 @@
-# How bright would SpaceX's orbital data centers be?
+# How bright could SpaceX’s proposed orbital data centers be?
 
 Reproducible counts behind the twilight simulation. Two published brightness
-models, the same 500,000 satellites, the same sky. Only the model changes.
+models with the same 500,000 satellites, same orbits, abd same viewing site. 
+Only the brightness model is different.
 
 Shane Ross, Aerospace and Ocean Engineering, Virginia Tech.
 
 ## The result
 
-Satellites above the horizon and brighter than V = 6, so visible to the
-unaided eye, from Blacksburg Virginia at the equinox:
+These are instantaneous counts of satellites above the horizon with apparent 
+visual magnitude (V < 6), a conventional naked-eye threshold under dark skies.
+The site is Blacksburg, Virginia (37 N latitude) at the equinox:
 
-| epoch | Boley no-mitigation | Mallama-anchored | ratio |
+| epoch | unmitigated model | optimistic mitigated model | ratio |
 |---|---|---|---|
 | at sunset | 66,300 | 11,500 | 6x |
 | +30 min | 55,100 | 6,000 | 9x |
 | +60 min | 41,700 | 1,700 | 24x |
 | +90 min | 28,300 | 0 | - |
 
-For scale, 1,612 stars are visible to the unaided eye from the same site.
+Applying the same magnitude cutoff and atmospheric-extinction model, 
+approximately 1,600 stars are above the horizon from the same location.
+
+The gap between the columns is the main result. Neither column is a prediction. 
+They represent two reference cases using the same constellation and observing 
+conditions. SpaceX could narrow this uncertainty by publishing the spacecraft’s 
+expected magnitude and phase function.
 
 The gap between the columns is the point. Neither number is a prediction.
 They bracket a range that only SpaceX can currently narrow, because the
@@ -33,22 +41,27 @@ if nobody tries to darken them. Implemented unchanged in `lsm.observe`.
 
 **Mallama et al. 2023**, [arXiv:2306.06657](https://arxiv.org/abs/2306.06657).
 The measured on-orbit phase function of Starlink Gen2 Mini in its brightness
-mitigation mode, offset by +1.97 mag for the ratio of the AI1 array area
-(710 m2) to the Mini's (116 m2). Implemented in `lsm.observe_empirical`.
+mitigation mode, scaled to the AI1 array area by making it 1.97 magnitudes 
+brighter; AI1 (710 m2) compared to the Mini's (116 m2). 
+Implemented in `lsm.observe_empirical`.
 
 Gen2 Mini is used as the anchor because it is the most recent SpaceX hardware
-that has actually flown and been photometrically measured. V3 has flown once,
-on a suborbital path, and was never cataloged, so no photometry exists for it.
+that has actually flown and been photometrically measured. Gen2 Mini is used 
+because it is the latest SpaceX design for which published on-orbit photometry
+was available when this repository was prepared.
 
 **The second column is a floor, not a prediction.** Part of the Gen2 Mini's
 mitigation is a terminator attitude maneuver. The AI1 design, with a radiator
-held knife-edge to the sun and arrays held face-on, structurally cannot
-perform it. The real answer is somewhere above the blue column.
+held knife-edge to the sun and arrays held face-on, does not appear able to 
+perform the same maneuver without departing from its stated radiator and 
+solar-array attitudes. The real answer is probably somewhere above the 
+optimistic mitigation model.
 
 ## Constellation
 
-The sun-synchronous groups exactly as filed, from Table 1 of SpaceX's
-29 May 2026 supplement to the FCC:
+The constellation is constructed from the sun-synchronous groups in Table 1 
+of SpaceX’s May 29, 2026 FCC supplement. The LTAN placement and RAAN spread 
+are additional modeling assumptions described below.
 
 | altitude (km) | inclination (deg) | planes | node families |
 |---|---|---|---|
@@ -87,8 +100,8 @@ of 66,000.
 The renderer that produces the video is not included. It carries texture and
 star catalog assets with their own licensing, and its exposure constants are
 tuned by eye for legibility. They are a presentation choice and carry no
-physical meaning. The counts above are the claim, and they are what is
-reproducible here.
+physical meaning. The video is an illustrative rendering. The reproducible 
+quantitative output of this repository is the visibility count table above.
 
 ## License
 
