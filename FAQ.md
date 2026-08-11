@@ -2,6 +2,10 @@
 
 Common questions about the twilight simulation and the two brightness models.
 
+Quotations attributed to SpaceX below are from "Brightness Mitigation Best
+Practices for Satellite Operators," SpaceX, at
+https://starlink.com/public-files/BrightnessMitigationBestPracticesSatelliteOperators.pdf
+
 ## Doesn't SpaceX plan to mitigate this?
 
 Yes, and the blue column already assumes they do. It is built from the
@@ -38,6 +42,11 @@ Naked eye. The threshold is V = 6, the conventional limit for unaided
 vision at a dark site, and atmospheric extinction is applied. Nothing here
 is a stacked or long-exposure astrophotograph.
 
+This is also the standard SpaceX sets for itself. Its brightness mitigation
+document states the goal as making its satellites "invisible to the naked
+eye when they are on station serving users." The metric used here is theirs,
+not one invented for this simulation.
+
 ## Isn't this only a twilight problem?
 
 That is precisely what the two models disagree about, and why the last row
@@ -52,6 +61,39 @@ Only above about 1,391 km. Sun-synchronous precession tracks Earth's pole,
 not the ecliptic, and Earth's axial tilt swings the shadow cone through the
 orbit plane over the year. The filed altitudes, 565 to 1,002 km, are all
 below that threshold, so these satellites do pass through eclipse.
+
+SpaceX describes the same effect in its own brightness mitigation document:
+satellites at 1,200 km "are visible at midnight to observatories like the
+Vera Rubin Observatory," while SpaceX's own lower satellites are not. The
+zero in the last row of the table is that physics, not a modeling choice.
+
+## Doesn't the terminator maneuver cost SpaceX power? Why would AI1 skip it?
+
+It costs 25%. SpaceX states in the same document that pointing the arrays
+away from the Sun at the terminator "results in a 25% reduction in available
+power for the satellite," and that the second-generation satellite was
+specifically designed to accommodate it.
+
+That is a real commitment and worth crediting. But Gen2 is a communications
+satellite, and giving up a quarter of its power costs it some link capacity.
+AI1 is a data center. Power *is* the product, and the compute it sells is
+what that power buys. Whether the same trade is affordable when it comes
+directly out of the revenue-generating function has not been addressed
+publicly. This is the single largest unknown behind the gap in the table.
+
+## What about satellites that are not in their normal operating attitude?
+
+Neither model accounts for them, and both are floors because of it. SpaceX's
+own document lists four phases where its satellites are expected to be
+brighter than their on-station brightness: the first orbits after launch,
+orbit raise (where they explicitly "aren't able to perform solar array
+off-pointing"), station-keeping and collision-avoidance burns, and deorbit.
+
+For a constellation of 500,000 satellites with finite service lifetimes, a
+meaningful number are in one of those phases at any given moment. Add the
+roughly 1% on-orbit failure rate seen in Starlink, where an uncontrolled
+satellite tumbles and can glint off 800 m2 of surface, and the real sky is
+brighter than either column here.
 
 ## The filing says 1,000,000 satellites. Why simulate 500,000?
 
