@@ -75,7 +75,7 @@ zero in the last row of the table is that physics, not a modeling choice.
 
 ## Doesn't the terminator maneuver cost SpaceX power? Why would AI1 skip it?
 
-It costs 25%. SpaceX states in the same document that pointing the arrays
+It costs 25% of the possible power. SpaceX states in the same document that pointing the arrays
 away from the Sun at the terminator "results in a 25% reduction in available
 power for the satellite," and that the second-generation satellite was
 specifically designed to accommodate it.
@@ -211,8 +211,8 @@ Run `sensitivity.py` to reproduce it.
 
 ## Isn't the simulation just tuned to look alarming?
 
-The counts are the claim, and they are reproducible from the code with
-numpy alone. Both brightness models come from published papers and are
+The counts of naked-eye visible satellites are the main claim, and they are reproducible from the code with
+numpy alone. Both brightness models come from manuscripts in arXiv and are
 implemented unchanged. The renderer's exposure and glow settings are a
 presentation choice with no physical meaning, which is why the renderer is
 not included and the count script is.
