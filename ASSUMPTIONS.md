@@ -231,9 +231,24 @@ model uses the paper's 0.2 on the full 800 m2 cross-section.
   @Obserfessor on X, and correct.
 
   `twilight.py` and `counts_twilight.py` apply an epoch-dependent limit
-  instead, from an empirical zenith sky-brightness fit anchored to Patat et
-  al. (2006) twilight photometry, combined with the Schaefer naked-eye
-  limiting-magnitude relation. The correction is large and it moves the result
+  instead. Two steps, and the sources matter:
+
+  - Zenith sky brightness against solar elevation, from the piecewise fit by
+    Han Kleijn (2017), hnsky.org/sqm_twilight.htm, made from his Unihedron
+    SQM-L measurements plus published ESO twilight photometry. Cited as
+    Kleijn rather than the underlying ESO work, because it is his fit that
+    is implemented here.
+  - Naked-eye limiting magnitude from that brightness, using Olof Carlin's
+    inversion of Schaefer (1990), PASP 102, 212, in the form implemented in
+    K. Fisher's Unihedron conversion calculator.
+
+  **Known passband inconsistency.** Carlin's relation maps a B-band surface
+  brightness to a V-band point-source limit, while the twilight fit is
+  anchored to broadband SQM-L and V-band data. The mismatch is worth a few
+  tenths of a magnitude and has not been reconciled. From `sensitivity.py`,
+  0.1 mag moves the mitigated count by about 11 percent and the unmitigated
+  one by 0.7 percent, so this is a real uncertainty on the blue column and a
+  negligible one on the orange. The correction is large and it moves the result
   rather than shrinking it:
 
   | after sunset | sun el | V limit | unmitigated | mitigated | stars |

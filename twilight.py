@@ -9,8 +9,9 @@ epoch-dependent limit instead.
 Two steps, both empirical approximations:
 
 1. Zenith sky brightness vs solar elevation, mag/arcsec2. Piecewise fit by
-   Han Kleijn (hnsky.org/sqm_twilight.htm) to SQM measurements combined
-   with the Paranal / Crimean twilight photometry of Patat et al. (2006):
+   Han Kleijn, "The brightness (SQM) value of the twilight sky" (2017),
+   https://www.hnsky.org/sqm_twilight.htm , from his own Unihedron SQM-L
+   measurements combined with published ESO twilight photometry:
 
        0 to -12 deg   SQM = -1.057 x + 6.7489
      -12 to -18 deg   SQM = -0.0744 x^2 - 2.5768 x - 0.5845
@@ -18,14 +19,23 @@ Two steps, both empirical approximations:
    The two branches agree to 0.2 mag at the join, and the second reaches
    21.7 at -18 deg, the natural dark-sky value.
 
-2. Naked-eye limiting magnitude for a point source vs sky brightness, the
-   Schaefer relation as commonly implemented for SQM readings:
+2. Naked-eye limiting magnitude for a point source vs sky brightness:
 
        NELM = 7.93 - 5 log10( 1 + 10^(4.316 - SQM/5) )
 
-   This returns 6.5 at SQM 21.75, the conventional dark-sky limit.
+   This is the inversion, by Olof Carlin, of the limiting-magnitude model in
+   Schaefer, B. E. (1990), "Telescopic Limiting Magnitudes", PASP 102, 212,
+   in the form implemented in K. Fisher's Unihedron conversion calculator.
+   It returns 6.5 at SQM 21.75, the conventional dark-sky limit.
 
 CAVEATS, which are large:
+  - PASSBAND. The Schaefer/Carlin relation is defined between a B-band
+    surface brightness and a V-band point-source limit. The twilight fit
+    above is anchored to broadband SQM-L readings and V-band photometry.
+    Feeding one into the other leaves an unreconciled offset of a few tenths
+    of a magnitude. That is not negligible here: `sensitivity.py` shows 0.1
+    mag moves the mitigated count by about 11 percent, though only 0.7
+    percent for the unmitigated one. The blue column is the one exposed.
   - Both are approximations, and naked-eye limits vary a lot between
     observers. Treat these as indicative, not precise.
   - Zenith only. During twilight the sky is much brighter toward the Sun,
