@@ -14,35 +14,69 @@ Shane Ross, Aerospace and Ocean Engineering, Virginia Tech.
 
 ## Brightness result
 
-These are instantaneous counts of satellites above the horizon with apparent 
-visual magnitude (V < 6), a conventional naked-eye threshold under dark skies.
-The site is Blacksburg, Virginia (37 N latitude) at the equinox:
+Instantaneous counts of satellites visible to the unaided eye from Blacksburg,
+Virginia (37 N) at the equinox, under a naturally dark sky.
 
-| epoch | unmitigated reference case | optimistic mitigated reference case | ratio |
-|---|---|---|---|
-| at sunset | 66,300 | 11,500 | 6x |
-| +30 min | 55,100 | 6,000 | 9x |
-| +60 min | 41,700 | 1,700 | 24x |
-| +90 min | 28,300 | 0 | - |
+The naked-eye threshold is **not** held fixed. It is computed at each epoch
+from the brightness of the twilight sky: an empirical zenith sky-brightness
+fit anchored to the Paranal twilight photometry of Patat et al. (2006),
+converted to a limiting magnitude by the Schaefer relation. At sunset the sky
+is far too bright for anything near sixth magnitude to be seen, and the limit
+only reaches its dark-sky value about 90 minutes later.
 
-Applying the same magnitude cutoff and atmospheric-extinction model, 
-1,623 stars are above the horizon from the same location.
+The last two columns repeat the counts under the stricter reporting
+conventions of Boley, Lawler & Rein: satellites above 10 degrees elevation
+rather than merely above the horizon, V < 5, and counts shown only once the
+Sun is 6 degrees or more below the horizon. Those are the figures to compare
+against their paper.
 
-> **Important limitation, added after publication.** The table above applies
-> V < 6 at every epoch. That is a *dark-sky* naked-eye threshold, and at sunset
-> the sky is nowhere near dark, so the two earliest rows credit the satellites
-> with a detection limit the sky does not permit. Raised by @Obserfessor on X,
-> and correct. Using an epoch-dependent limit instead, nothing is visible in
-> either case for roughly the first 25 minutes, and the unmitigated case peaks
-> near 68 minutes after sunset rather than at sunset. See `twilight.py`,
-> `counts_twilight.py`, and section 7 of `ASSUMPTIONS.md`. The rows above are
-> correct as counts of satellites brighter than V = 6; it is the phrase
-> "visible to the naked eye" that does not hold at the early epochs.
+| after sunset | sun el | V limit | unmitigated | mitigated | stars | unmit (Boley conv.) | mitig (Boley conv.) |
+|---|---|---|---|---|---|---|---|
+| 0 min | 0.0 | -6.90 | 0 | 0 | 0 | - | - |
+| 30 min | -6.0 | -0.64 | 151 | 0 | 1 | - | - |
+| 60 min | -11.9 | 5.01 | 33,496 | 0 | 536 | 26,923 | 0 |
+| **68 min** | -13.5 | 5.89 | **37,704** | 550 | 1,440 | **24,199** | 0 |
+| 90 min | -17.7 | 6.49 | 32,310 | 720 | 2,868 | 15,741 | 0 |
+| 120 min | -23.5 | 6.48 | 18,569 | 0 | 2,831 | 8,051 | 0 |
+| 150 min | -29.0 | 6.48 | 8,899 | 0 | 2,831 | 1,072 | 0 |
+| 180 min | -34.3 | 6.48 | 1,134 | 0 | 2,831 | 0 | 0 |
 
-The gap between the columns is the main result. Neither column is a prediction, 
-and they are not strict mathematical bounds. They are two reference cases using 
-identical orbits and observing conditions. An AI1-specific magnitude and phase 
-function would substantially narrow the uncertainty.
+Three things follow.
+
+**Nothing is visible in either case for roughly the first 25 minutes.** The
+sky is simply too bright. This is not a sunset phenomenon.
+
+**The unmitigated case peaks about an hour after sunset**, near 37,700
+satellites, against roughly 1,400 stars visible at that same moment. It is
+still near 18,600 two hours out, and reaches zero at about 3 hours 20 minutes,
+not because the satellites are all eclipsed but because the ones still lit are
+low on the horizon at long range.
+
+**The mitigated case never exceeds about 1,300**, fewer than the stars visible
+at the same moment, and is gone by two hours. Under Boley's V < 5 convention it
+is zero at every epoch, because the brightest mitigated satellite anywhere in
+the constellation is V = 5.37.
+
+The gap between the two cases is the main result. Neither column is a
+prediction, and they are not strict mathematical bounds. They are two
+reference cases using identical orbits, sky, and observing conditions. An
+AI1-specific magnitude and phase function would substantially narrow the
+uncertainty.
+
+Reproduce with `python3 counts_twilight.py`. Artificial skyglow makes the
+contrast sharper rather than softer, since it erases the faint mitigated
+satellites entirely while the bright unmitigated ones survive and the stars
+fade fastest of all; `python3 counts_twilight.py 4` runs a Bortle 4 site.
+
+### Earlier version of this table
+
+The first published version applied a flat V < 6 at every epoch and reported
+66,300 at sunset. That is a *dark-sky* threshold, and applying it during bright
+twilight credits the satellites with a detection limit the sky does not permit.
+Raised by @Obserfessor on X, and correct. `counts.py` still reproduces those
+figures, which remain valid as counts of satellites brighter than V = 6; it was
+the phrase "visible to the naked eye" that did not hold at the early epochs.
+The correction relocates the result rather than shrinking it.
 
 ## The two models
 
@@ -96,12 +130,15 @@ sun-synchronous component, not the complete one-million-satellite filing.
 Requires Python 3 and NumPy.
 
 ```
-python3 counts.py
+python3 counts_twilight.py      # the table above
+python3 counts_twilight.py 4    # same, for a Bortle 4 site
+python3 counts.py               # the earlier flat V < 6 version
 ```
 
-Prints the table above, with the min and max over ten minutes of orbital
-phase so you can see how stable the counts are. In the 66,300-satellite case, 
-the count varies by only about 20 satellites over the ten-minute interval.
+`counts.py` also prints the min and max over ten minutes of orbital phase, so
+you can see how stable the counts are: in the 66,300-satellite case it varies
+by about 20 satellites over the interval. The epoch-to-epoch changes in the
+table above are real, not sampling noise.
 
 ## Files
 
