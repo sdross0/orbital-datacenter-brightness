@@ -6,7 +6,7 @@ Only the brightness model is different.
 
 Shane Ross, Aerospace and Ocean Engineering, Virginia Tech.
 
-[![Ground-level simulation of the proposed orbital data-center constellation](assets/simulation-still.png)](https://youtu.be/LBZeKyh72q4)
+[![Ground-level simulation of the proposed orbital data-center constellation](assets/peak_check.png)](https://youtu.be/LBZeKyh72q4)
 
 *Illustrative ground-level rendering from Blacksburg, Virginia. Quantitative results are reported in the table below.*
 
