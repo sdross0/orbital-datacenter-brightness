@@ -19,43 +19,53 @@ Virginia (37 N) at the equinox, under a naturally dark sky.
 
 The naked-eye threshold is **not** held fixed. It is computed at each epoch
 from the brightness of the twilight sky: an empirical zenith sky-brightness
-fit based on the Paranal twilight photometry of Patat et al. (2006),
+fit anchored to the Paranal twilight photometry of Patat et al. (2006),
 converted to a limiting magnitude by the Schaefer relation. At sunset the sky
 is far too bright for anything near sixth magnitude to be seen, and the limit
 only reaches its dark-sky value about 90 minutes later.
 
-The last two columns repeat the counts under the stricter reporting
-conventions of Boley, Lawler & Rein: satellites above 10 degrees elevation
-rather than merely above the horizon, V < 5, and counts shown only once the
-Sun is 6 degrees or more below the horizon. Those are the figures to compare
-against their paper.
+![Satellites visible to the unaided eye through the evening](assets/evening.png)
 
-| after sunset | sun el | V limit | unmitigated | mitigated | stars | unmit (Boley conv.) | mitig (Boley conv.) |
-|---|---|---|---|---|---|---|---|
-| 0 min | 0.0 | -6.90 | 0 | 0 | 0 | - | - |
-| 30 min | -6.0 | -0.64 | 151 | 0 | 1 | - | - |
-| 60 min | -11.9 | 5.01 | 33,496 | 0 | 536 | 26,923 | 0 |
-| **68 min** | -13.5 | 5.89 | **37,704** | 550 | 1,440 | **24,199** | 0 |
-| 90 min | -17.7 | 6.49 | 32,310 | 720 | 2,868 | 15,741 | 0 |
-| 120 min | -23.5 | 6.48 | 18,569 | 0 | 2,831 | 8,051 | 0 |
-| 150 min | -29.0 | 6.48 | 8,899 | 0 | 2,831 | 1,072 | 0 |
-| 180 min | -34.3 | 6.48 | 1,134 | 0 | 2,831 | 0 | 0 |
+*Regenerate with `python3 figure_evening.py`.*
 
-Three things follow.
+| after sunset | sun el | V limit | unmitigated | mitigated | stars | |
+|---|---|---|---|---|---|---|
+| 0 min | 0.0 | -6.90 | 0 | 0 | 0 | *sunset* |
+| 30 min | -6.0 | -0.64 | 151 | 0 | 1 | *first satellite appears* |
+| 45 min | -8.9 | 2.37 | 12,522 | 0 | 25 | |
+| 62 min | -12.3 | 5.39 | 36,136 | 147 | 835 | *mitigated case appears* |
+| 70 min | -13.9 | 6.02 | **37,798** | 692 | 1,658 | *unmitigated peak* |
+| 80 min | -15.8 | 6.41 | 36,308 | **1,405** | 2,598 | *mitigated peak* |
+| 106 min | -20.8 | 6.48 | 24,639 | 10 | 2,831 | *mitigated case gone* |
+| 120 min | -23.5 | 6.48 | 18,569 | 0 | 2,831 | |
+| 150 min | -29.0 | 6.48 | 8,899 | 0 | 2,831 | |
+| 198 min | -37.3 | 6.48 | 104 | 0 | 2,831 | *unmitigated gone* |
 
-**Nothing is visible in either case for roughly the first 25 minutes.** The
-sky is simply too bright. This is not a sunset phenomenon.
+Four things follow.
 
-**The unmitigated case peaks about an hour after sunset**, near 37,700
-satellites, against roughly 1,400 stars visible at that same moment. It is
-still near 18,600 two hours out, and reaches zero at about 3 hours 20 minutes,
-not because the satellites are all eclipsed but because the ones still lit are
-low on the horizon at long range.
+**Nothing at all is visible for the first half hour.** The sky is simply too
+bright. This is not a sunset phenomenon, and the earlier version of this table
+was wrong to present it as one.
 
-**The mitigated case never exceeds about 1,300**, fewer than the stars visible
-at the same moment, and is gone by two hours. Under Boley's V < 5 convention it
-is zero at every epoch, because the brightest mitigated satellite anywhere in
-the constellation is V = 5.37.
+**The two cases are visible for very different lengths of time.** The
+unmitigated case runs from 30 minutes to about 3 hours 20 minutes after sunset,
+some two and a half hours of it with more satellites in the sky than stars. The
+mitigated case is visible for only about 44 minutes, from 62 to 106 minutes.
+
+**They do not even peak at the same time.** The unmitigated case peaks at 70
+minutes, the mitigated case at 80, because the second is still being uncovered
+by the darkening sky when the first has already begun to be eclipsed.
+
+**The mitigated case never reaches the stars.** Its maximum of about 1,405 is
+roughly half the 2,831 stars visible once the sky is fully dark. The unmitigated
+case exceeds the stars by more than ten to one at peak.
+
+Under the stricter reporting conventions of Boley, Lawler & Rein (satellites
+above 10 degrees elevation, V < 5, counts shown only once the Sun is 6 degrees
+down) the unmitigated peak is about 24,200 and the mitigated case is zero at
+every epoch, because the brightest mitigated satellite anywhere in the
+constellation is V = 5.37. Those are the figures to compare against their paper,
+and `counts_twilight.py` prints both conventions side by side.
 
 The gap between the two cases is the main result. Neither column is a
 prediction, and they are not strict mathematical bounds. They are two
@@ -147,6 +157,7 @@ table above are real, not sampling noise.
 | `lsm.py` | photometry, orbit propagation, both brightness models |
 | `counts.py` | reproduces the table |
 | `counts_twilight.py` | the same counts with an epoch-dependent naked-eye limit |
+| `figure_evening.py` | the figure above |
 | `twilight.py` | twilight sky brightness and limiting magnitude |
 | `stars.py` | naked-eye star counts, from the standard catalogue tabulation |
 | `spacing.py` | satellite-to-satellite spacing, three ways |
