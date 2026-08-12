@@ -19,7 +19,7 @@ Virginia (37 N) at the equinox, under a naturally dark sky.
 
 The naked-eye threshold is **not** held fixed. It is computed at each epoch
 from the brightness of the twilight sky: an empirical zenith sky-brightness
-fit anchored to the Paranal twilight photometry of Patat et al. (2006),
+fit based on the Paranal twilight photometry of Patat et al. (2006),
 converted to a limiting magnitude by the Schaefer relation. At sunset the sky
 is far too bright for anything near sixth magnitude to be seen, and the limit
 only reaches its dark-sky value about 90 minutes later.
