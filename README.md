@@ -83,7 +83,7 @@ fade fastest of all; `python3 counts_twilight.py 4` runs a Bortle 4 site.
 The first published version applied a flat V < 6 at every epoch and reported
 66,300 at sunset. That is a *dark-sky* threshold, and applying it during bright
 twilight credits the satellites with a detection limit the sky does not permit.
-Raised by @Obserfessor on X, and correct. `counts.py` still reproduces those
+This improvement was siggested by @Obserfessor on X, and now impemented. `counts.py` still reproduces those
 figures, which remain valid as counts of satellites brighter than V = 6; it was
 the phrase "visible to the naked eye" that did not hold at the early epochs.
 The correction relocates the result rather than shrinking it.
