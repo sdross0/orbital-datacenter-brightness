@@ -158,17 +158,35 @@ table above are real, not sampling noise.
 | `counts.py` | reproduces the table |
 | `counts_twilight.py` | the same counts with an epoch-dependent naked-eye limit |
 | `figure_evening.py` | the figure above |
+| `skymodel.py` | twilight sky brightness over the whole dome |
+| `realstars.py`, `hyg_naked_eye.npz` | 8,913 real naked-eye stars, HYG database |
+| `frame.py` | composes one ground frame: sky, stars, satellites |
+| `overlay.py` | the on-screen inset, labels and closing card |
+| `current_sky.py` | the same counts for today's Starlink fleet, for comparison |
 | `twilight.py` | twilight sky brightness and limiting magnitude |
 | `stars.py` | naked-eye star counts, from the standard catalogue tabulation |
 | `spacing.py` | satellite-to-satellite spacing, three ways |
 | `sensitivity.py` | how the counts move under a systematic brightness error |
 | `ASSUMPTIONS.md` | every assumption, its provenance, and what is not modeled |
 
-The renderer that produces the video is not included. It carries texture and
-star catalog assets with their own licensing, and its exposure constants are
-tuned by eye for legibility. They are a presentation choice and carry no
-physical meaning. The video is an illustrative rendering. The reproducible 
-quantitative output of this repository is the visibility count table above.
+The ground renderer **is** included: `skymodel.py`, `realstars.py`, `frame.py`
+and `overlay.py` produce the twilight frames. Every satellite drawn is one that
+beats the sky brightness at its own position, so the number shown on a frame and
+the dots in it agree by construction. Only the opening approach sequence is
+left out, because it needs Earth surface textures with their own licensing.
+
+Two conventions are in play and it is worth being explicit about which is which.
+The tables above are **whole sky**, against the zenith limit, which is the right
+basis for comparison with Boley et al. The video reports what is inside its own
+95 degree frame, against the local sky at each point, which is about a quarter
+of the sky and a stricter test. Peak values under each:
+
+| | in the video's view | whole sky |
+|---|---|---|
+| no mitigation | 18,339 | 37,798 |
+| best-case mitigation | 334 | 1,405 |
+
+Neither is a correction of the other. They answer different questions.
 
 ## Declaration of generative AI and AI-assisted technologies
 

@@ -217,6 +217,13 @@ model uses the paper's 0.2 on the full 800 m2 cross-section.
 - **Diffuse sky background.** Individual point sources only. Hainaut (2026)
   shows aggregate scattered light spreads the impact well beyond the ring.
 
+- **Star positions, in the counting scripts.** `stars.py` reproduces the real
+  magnitude distribution from the catalogue tabulation but scatters stars at
+  random, with a fabricated Milky Way. That is harmless for counting, which
+  depends only on the distribution, and wrong for pictures. The renderer uses
+  `realstars.py` instead: 8,913 real stars brighter than V = 6.5 from the HYG
+  database, with true positions and B-V colour.
+
 - **Twilight sky brightness, in the headline table.** The counts in `counts.py`
   apply V < 6 at every epoch. That is a *dark-sky* naked-eye threshold, and at
   sunset the sky is nowhere near dark, so those early-epoch counts credit the
@@ -285,20 +292,31 @@ model uses the paper's 0.2 on the full 800 m2 cross-section.
   limit falling 0.044 mag/yr, which pushes the ratio the same way over time.
   Extrapolating that rate across decades is speculative.
 
-- **Camera azimuth in the video.** The ground clips look at azimuth 200 deg,
-  chosen so the ring stayed in a 95 deg frame across the four original epochs.
-  That framing is now stale. The ring's mean azimuth moves from 226 deg at
-  sunset to 289 deg at +90 min, so at the corrected peak near 68 min the ring
-  is centred near 281 deg, outside the frame. A re-render should follow it,
-  which also means pointing nearer the solar azimuth where the twilight sky is
-  brightest.
+- **Camera azimuth in the video.** Fixed at 315 degrees, northwest, HFOV 95.
+  Chosen by scanning heading against the number of satellites clearing the
+  local sky limit, summed over the evening. Northwest wins because the
+  dawn-dusk ring hugs the terminator, so it has to be looked for toward the
+  sunset. Looking east is nearly empty: the darkest sky is anti-solar, and
+  satellites there are in Earth's shadow. Totals across the evening were
+  29,883 at 315 deg, 24,984 at 240 deg, 20,925 at 0 deg and about 20 anywhere
+  between 60 and 120 deg.
 
-- **Sky background in the render is not radiometric.** The video's sky is a
-  hand-tuned gradient with an empirical shadow height, not a physical model,
-  so nothing in the image is calibrated against the counts. Doing this
-  properly (Haber, Magnor & Seidel 2005 for twilight, or an empirical fit to
-  Patat's measurements) would make visibility a property of the image rather
-  than a separate calculation. Not yet done.
+- **Sky background in the render.** Now radiometric, in `skymodel.py`. The
+  measured zenith brightness from `twilight.py` is spread over the dome by
+  three terms: residual twilight brightening toward the Sun, which fades to
+  nothing by the end of astronomical twilight; an airglow term using the van
+  Rhijn path length through a 90 km layer, attenuated by extinction along the
+  same path, which peaks near 12 deg elevation and leaves the horizon itself
+  about 0.8 mag darker than the zenith; and Earth's shadow with the Belt of
+  Venus above it in the anti-solar direction.
+
+  Only the zenith is anchored to data. The angular shape is empirical and
+  chosen to look right, which is why the counts still quote the zenith value:
+  the frame is the illustration, the counts are the claim.
+
+  With the sky carrying real units, a satellite is drawn only if it beats the
+  local sky at its own position, so the number on screen and the picture beside
+  it agree by construction rather than by assertion.
 - **Orbit raising and lowering.** The paper estimates ~7% of satellites are off
   their operational altitude at any time, at unknown and probably higher
   brightness.
