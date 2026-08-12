@@ -55,11 +55,18 @@ not one invented for this simulation.
 
 ## Isn't this only a twilight problem?
 
-That is precisely what the two models disagree about, and why the last row
-matters most. The blue model says yes: by 90 minutes after sunset the count
-reaches zero, because the satellites have entered Earth's shadow or dropped
-below the visibility threshold. The orange model says no: roughly 28,300
-would still be visible at that time.
+It is a *late* twilight problem, which is not the same thing.
+
+The headline table applies V < 6 at every epoch, and that is a dark-sky
+threshold. Correcting for how bright the twilight sky actually is
+(`twilight.py`), nothing is visible in either case for roughly the first 25
+minutes after sunset. The unmitigated count then climbs to a peak near 68
+minutes and is still around 18,000 two hours out, reaching zero at about
+3 hours 20 minutes. The mitigated count never exceeds about 1,300, which is
+fewer than the stars visible at the same moment, and is gone by two hours.
+
+So the effect does not land at sunset, when nobody could see it anyway. It
+lands in the window when the sky is dark enough to observe.
 
 ## Why do they go dark at all? I thought sun-synchronous orbits stay lit.
 
@@ -75,7 +82,7 @@ zero in the last row of the table is that physics, not a modeling choice.
 
 ## Doesn't the terminator maneuver cost SpaceX power? Why would AI1 skip it?
 
-It costs 25% of the possible power. SpaceX states in the same document that pointing the arrays
+It costs 25%. SpaceX states in the same document that pointing the arrays
 away from the Sun at the terminator "results in a 25% reduction in available
 power for the satellite," and that the second-generation satellite was
 specifically designed to accommodate it.
@@ -157,9 +164,24 @@ question is which loses more.
 
 Light pollution separates the two models rather than equalising them. The
 mitigated satellites are faint, so city light erases them completely. The
-unmitigated ones are bright enough to punch through, and in a city sky
-where only 59 stars remain you would be looking at roughly 33,000
-satellites, outnumbering the stars by more than 500 to 1.
+unmitigated ones are bright enough to punch through.
+
+The same holds with the twilight correction applied. At the unmitigated peak,
+68 minutes after sunset, counting only satellites above 10 degrees:
+
+| site | naked-eye limit | unmitigated | mitigated | stars | ratio |
+|---|---|---|---|---|---|
+| pristine, Bortle 1 | 5.89 | 27,567 | 550 | 1,394 | 20:1 |
+| rural, Bortle 3 | 5.64 | 26,784 | 191 | 1,052 | 25:1 |
+| rural/suburban, Bortle 4 | 5.46 | 26,036 | 36 | 872 | 30:1 |
+| suburban, Bortle 5 | 5.06 | 24,557 | 0 | 553 | 44:1 |
+| city, Bortle 8 | 3.49 | 13,995 | 0 | 94 | 149:1 |
+
+Stars fall away faster than bright satellites do, so the satellites become a
+larger share of what is left, not a smaller one. Kyba et al. (2023, Science
+379, 265) find skyglow rising about 9.6% per year, equivalent to the naked-eye
+limit falling 0.044 magnitudes per year, which pushes this the same way over
+time. Run `counts_twilight.py 4` for a Bortle 4 site.
 
 ## The filing says 1,000,000 satellites. Why simulate 500,000?
 
@@ -209,10 +231,34 @@ either would be worth more than the range in this table.
 
 Run `sensitivity.py` to reproduce it.
 
+## What limiting magnitude do you actually use?
+
+It depends which script you run, and this matters more than it sounds.
+
+`counts.py` uses a flat V < 6 at every epoch. That is the conventional
+dark-sky naked-eye limit, and it is only appropriate once the sky is dark. It
+is roughly right 90 minutes after sunset, where the proper limit is 6.49, and
+badly wrong at sunset, where the sky is far too bright for anything near V = 6
+to be seen.
+
+`counts_twilight.py` recomputes the limit at every step from the solar
+elevation, using an empirical zenith sky-brightness fit anchored to the
+Paranal twilight photometry of Patat et al. (2006), then the Schaefer
+naked-eye limiting-magnitude relation. It optionally adds artificial skyglow
+by Bortle class.
+
+It also reports counts under the stricter conventions of Boley, Lawler & Rein:
+satellites above 10 degrees elevation rather than merely above the horizon,
+V < 5 rather than V < 6, and counts shown only once the Sun is 6 degrees or
+more below the horizon. Those are the numbers to compare against their paper.
+Under their conventions the unmitigated peak is about 24,000 and the mitigated
+case is zero at every epoch, because the brightest mitigated satellite
+anywhere in the constellation is V = 5.37.
+
 ## Isn't the simulation just tuned to look alarming?
 
-The counts of naked-eye visible satellites are the main claim, and they are reproducible from the code with
-numpy alone. Both brightness models come from manuscripts in arXiv and are
+The counts are the claim, and they are reproducible from the code with
+numpy alone. Both brightness models come from published papers and are
 implemented unchanged. The renderer's exposure and glow settings are a
 presentation choice with no physical meaning, which is why the renderer is
 not included and the count script is.

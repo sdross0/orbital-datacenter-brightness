@@ -216,6 +216,89 @@ model uses the paper's 0.2 on the full 800 m2 cross-section.
   brighter for brief windows. Another reason these are a floor.
 - **Diffuse sky background.** Individual point sources only. Hainaut (2026)
   shows aggregate scattered light spreads the impact well beyond the ring.
+
+- **Twilight sky brightness, in the headline table.** The counts in `counts.py`
+  apply V < 6 at every epoch. That is a *dark-sky* naked-eye threshold, and at
+  sunset the sky is nowhere near dark, so those early-epoch counts credit the
+  satellites with a detection limit the sky does not permit. Raised by
+  @Obserfessor on X, and correct.
+
+  `twilight.py` and `counts_twilight.py` apply an epoch-dependent limit
+  instead, from an empirical zenith sky-brightness fit anchored to Patat et
+  al. (2006) twilight photometry, combined with the Schaefer naked-eye
+  limiting-magnitude relation. The correction is large and it moves the result
+  rather than shrinking it:
+
+  | after sunset | sun el | V limit | unmitigated | mitigated | stars |
+  |---|---|---|---|---|---|
+  | 0 min | 0.0 | -6.90 | 0 | 0 | 0 |
+  | 30 min | -6.0 | -0.64 | 151 | 0 | 1 |
+  | 60 min | -11.9 | 5.01 | 33,496 | 0 | 536 |
+  | 68 min | -13.4 | 5.86 | 37,656 | 515 | 1,395 |
+  | 90 min | -17.7 | 6.49 | 32,310 | 720 | 2,868 |
+  | 120 min | -23.5 | 6.48 | 18,569 | 0 | 2,831 |
+
+  Nothing is visible in either case for roughly the first 25 minutes. The
+  unmitigated count peaks near 68 minutes after sunset, not at sunset, and the
+  mitigated count never exceeds about 1,300, which is fewer than the stars
+  visible at the same moment.
+
+  Still approximate. The sky-brightness fit is for the **zenith**. Naked-eye
+  limits also vary substantially between observers, and the Schaefer relation
+  is itself an approximation.
+
+  **Boley et al. did not make this mistake.** Their paper gates on solar
+  depression (counts shown only once the Sun is 6 degrees or more below the
+  horizon), uses V < 5 rather than V < 6, and includes only satellites more
+  than 10 degrees above the horizon. All three guards were dropped in adapting
+  their model here, not by them. `counts_twilight.py` now reports their
+  conventions alongside:
+
+  | after sunset | this work | Boley conventions |
+  |---|---|---|
+  | 60 min | 33,496 | 26,923 |
+  | 68 min | 37,656 | 24,447 |
+  | 90 min | 32,310 | 15,741 |
+  | 120 min | 18,569 | 8,051 |
+
+  Under their conventions the mitigated case is **zero at every epoch**,
+  because the brightest mitigated satellite anywhere in the constellation is
+  V = 5.37, fainter than their V < 5 cut.
+
+- **Artificial skyglow.** The counts assume a naturally dark site. Blacksburg
+  is a town of 45,000 and is not one. `twilight.py` now takes an artificial
+  skyglow term by Bortle class. At the unmitigated peak, satellites above 10
+  degrees:
+
+  | site | naked-eye limit | unmitigated | mitigated | stars | ratio |
+  |---|---|---|---|---|---|
+  | pristine, Bortle 1 | 5.89 | 27,567 | 550 | 1,394 | 20:1 |
+  | rural, Bortle 3 | 5.64 | 26,784 | 191 | 1,052 | 25:1 |
+  | rural/suburban, Bortle 4 | 5.46 | 26,036 | 36 | 872 | 30:1 |
+  | suburban, Bortle 5 | 5.06 | 24,557 | 0 | 553 | 44:1 |
+  | city, Bortle 8 | 3.49 | 13,995 | 0 | 94 | 149:1 |
+
+  Skyglow separates the two cases rather than blurring them: it erases the
+  faint mitigated satellites entirely while the bright unmitigated ones
+  survive, and it removes stars faster than either. Kyba et al. (2023),
+  Science 379, 265, find skyglow rising 9.6 %/yr, equivalent to the naked-eye
+  limit falling 0.044 mag/yr, which pushes the ratio the same way over time.
+  Extrapolating that rate across decades is speculative.
+
+- **Camera azimuth in the video.** The ground clips look at azimuth 200 deg,
+  chosen so the ring stayed in a 95 deg frame across the four original epochs.
+  That framing is now stale. The ring's mean azimuth moves from 226 deg at
+  sunset to 289 deg at +90 min, so at the corrected peak near 68 min the ring
+  is centred near 281 deg, outside the frame. A re-render should follow it,
+  which also means pointing nearer the solar azimuth where the twilight sky is
+  brightest.
+
+- **Sky background in the render is not radiometric.** The video's sky is a
+  hand-tuned gradient with an empirical shadow height, not a physical model,
+  so nothing in the image is calibrated against the counts. Doing this
+  properly (Haber, Magnor & Seidel 2005 for twilight, or an empirical fit to
+  Patat's measurements) would make visibility a property of the image rather
+  than a separate calculation. Not yet done.
 - **Orbit raising and lowering.** The paper estimates ~7% of satellites are off
   their operational altitude at any time, at unknown and probably higher
   brightness.

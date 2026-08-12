@@ -28,6 +28,17 @@ The site is Blacksburg, Virginia (37 N latitude) at the equinox:
 Applying the same magnitude cutoff and atmospheric-extinction model, 
 1,623 stars are above the horizon from the same location.
 
+> **Important limitation, added after publication.** The table above applies
+> V < 6 at every epoch. That is a *dark-sky* naked-eye threshold, and at sunset
+> the sky is nowhere near dark, so the two earliest rows credit the satellites
+> with a detection limit the sky does not permit. Raised by @Obserfessor on X,
+> and correct. Using an epoch-dependent limit instead, nothing is visible in
+> either case for roughly the first 25 minutes, and the unmitigated case peaks
+> near 68 minutes after sunset rather than at sunset. See `twilight.py`,
+> `counts_twilight.py`, and section 7 of `ASSUMPTIONS.md`. The rows above are
+> correct as counts of satellites brighter than V = 6; it is the phrase
+> "visible to the naked eye" that does not hold at the early epochs.
+
 The gap between the columns is the main result. Neither column is a prediction, 
 and they are not strict mathematical bounds. They are two reference cases using 
 identical orbits and observing conditions. An AI1-specific magnitude and phase 
@@ -98,6 +109,9 @@ the count varies by only about 20 satellites over the ten-minute interval.
 |---|---|
 | `lsm.py` | photometry, orbit propagation, both brightness models |
 | `counts.py` | reproduces the table |
+| `counts_twilight.py` | the same counts with an epoch-dependent naked-eye limit |
+| `twilight.py` | twilight sky brightness and limiting magnitude |
+| `stars.py` | naked-eye star counts, from the standard catalogue tabulation |
 | `spacing.py` | satellite-to-satellite spacing, three ways |
 | `sensitivity.py` | how the counts move under a systematic brightness error |
 | `ASSUMPTIONS.md` | every assumption, its provenance, and what is not modeled |
