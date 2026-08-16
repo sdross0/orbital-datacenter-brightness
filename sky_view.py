@@ -274,8 +274,24 @@ def corner_stretch(hfov, w, h):
     return float(1.0 / np.cos(theta) ** 3)
 
 
-def ring_azimuth(cons, year, month, day, lat, mins, dusk=True):
-    """Mean azimuth of the sunlit satellites, so the app can aim itself."""
+def ring_azimuth(cons, year, month, day, lat, mins, dusk=True,
+                 model="boley", bortle=1, hfov=90.0):
+    """
+    The heading that puts the most satellites in frame.
+
+    Not the mean azimuth, which is what this used to return and which is the
+    wrong statistic. The ring is often two lobes with a gap between them, and
+    the circular mean of two lobes lands in the gap: at the December solstice
+    the unmitigated distribution peaks near 175 and 335 degrees, and its mean
+    is 253, a direction that is comparatively empty. This instead slides a
+    window the width of the field of view around the horizon and returns the
+    centre of the fullest one, which is the question the user is asking.
+
+    The model matters too, and the earlier version ignored it. The two
+    brightness models put their satellites in quite different parts of the
+    sky, because the mitigated ones only clear the limit where the geometry
+    favours them.
+    """
     dec, _ = solar.sun(year, month, day)
     ss = solar.sunset_lst(lat, dec)
     if ss is None:
@@ -284,14 +300,23 @@ def ring_azimuth(cons, year, month, day, lat, mins, dusk=True):
     lst = ref + (mins if dusk else -mins) / 60.0
     r, u, e, n = L.observer(lat, lst)
     s = L.sun_dir(dec)
-    A = []
+    sun_el = float(np.degrees(np.arcsin(np.clip(s @ u, -1, 1))))
+    vlim = float(T.nelm(sun_el, BORTLE_SQM[bortle]))
+    f = L.observe if model == "boley" else L.observe_empirical
+
+    nb = 180                                   # 2 degree bins
+    hist = np.zeros(nb)
     for c in cons:
         p = L.propagate(c, 0.0)
-        alt, az, d, V, lit = L.observe(p, r, u, e, n, s)
-        k = lit & (alt > np.radians(10)) & np.isfinite(V) & (V < 6.5)
+        alt, az, d, V, lit = f(p, r, u, e, n, s)
+        k = lit & np.isfinite(V) & (alt > 0) & (V < vlim)
         if k.any():
-            A.append(az[k])
-    if not A:
+            hist += np.histogram(np.degrees(az[k]) % 360.0,
+                                 bins=nb, range=(0.0, 360.0))[0]
+    if hist.sum() < 1:
         return None
-    a = np.concatenate(A)
-    return float(np.degrees(np.arctan2(np.sin(a).mean(), np.cos(a).mean())) % 360)
+
+    w = max(int(round(hfov / (360.0 / nb))), 1)
+    tiled = np.concatenate([hist, hist, hist])
+    smooth = np.convolve(tiled, np.ones(w), "same")[nb:2 * nb]
+    return float((smooth.argmax() + 0.5) * (360.0 / nb))

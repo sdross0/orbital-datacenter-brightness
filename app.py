@@ -77,10 +77,25 @@ def find_peak(lat, y, m, d, dusk, model, bortle):
 
 
 @st.cache_data(show_spinner=False)
-def ring_az(lat, y, m, d, mins, dusk, n_sats):
+def count_now(lat, y, m, d, dusk, mins, bortle, model, n_sats):
+    """
+    Whole-sky count at this instant, cheaply. One satellite pass, no pixels.
+
+    Used to decide whether an animation is worth rendering at all. Sixty
+    frames of a sky with nothing in it costs half a minute and shows exactly
+    what one frame would have shown.
+    """
+    base = base_constellation()
+    cons, scale = SV.subsample(base, n_sats)
+    return SV.whole_sky_count(cons, scale, y, m, d, lat, mins, dusk,
+                              bortle, model)
+
+
+@st.cache_data(show_spinner=False)
+def ring_az(lat, y, m, d, mins, dusk, n_sats, model, bortle, hfov):
     base = base_constellation()
     cons, _ = SV.subsample(base, n_sats)
-    return SV.ring_azimuth(cons, y, m, d, lat, mins, dusk)
+    return SV.ring_azimuth(cons, y, m, d, lat, mins, dusk, model, bortle, hfov)
 
 
 @st.cache_data(show_spinner=False, max_entries=4)
@@ -211,7 +226,28 @@ mode = sb.radio("What moves", list(MOTION.keys()),
                 help="Satellites moving holds the clock still and advances the "
                      "orbits a second at a time. The evening passing holds the "
                      "orbits and runs the clock from sunset to the small hours.")
-if mode != "Still":
+
+# Do not render an animation of an empty sky. Both checks are one satellite
+# pass, against roughly thirty seconds for the frames they save.
+no_motion = None
+if mode == "Satellites moving":
+    if count_now(lat, date.year, date.month, date.day, dusk, mins,
+                 bortle, model, n_sats) < 1:
+        no_motion = ("Nothing is visible at this minute under this model, so "
+                     "there is nothing to set moving. Move the clock, or "
+                     "switch to the no-mitigation model.")
+elif mode == "The evening passing":
+    if not peak_n or peak_n < 1:
+        no_motion = ("Nothing is visible at any point this evening under this "
+                     "model. At this latitude the optimistic case disappears "
+                     "entirely between about 13 April and 30 August, when "
+                     "these satellites spend the night in Earth's shadow. Try "
+                     "a date in autumn or winter.")
+
+if no_motion:
+    mode = "Still"
+    sb.info(no_motion)
+elif mode != "Still":
     sb.caption("Rendering this takes a few seconds the first time. After that "
                "it is cached, and the speed menu costs nothing.")
 
@@ -253,14 +289,17 @@ if solar.sunset_lst(lat, solar.sun(date.year, date.month, date.day)[0]) is None:
  tex_w) = sky_state(lat, date.year, date.month, date.day, dusk, mins,
                     bortle, model, n_sats, mode, res)
 
-ring = ring_az(lat, date.year, date.month, date.day, mins, dusk, n_sats)
+ring = ring_az(lat, date.year, date.month, date.day, mins, dusk,
+               n_sats, model, bortle, fov0)
 if ring is not None:
     off = abs(((ring - az0 + 180) % 360) - 180)
     st.session_state.ring_target = int(round(ring)) // 5 * 5
-    sb.button("Aim at the densest part of the ring (%d deg)" % round(ring),
+    sb.button("Aim at the densest sky (%d deg %s)"
+              % (round(ring), SV.point_name(ring)),
               use_container_width=True, on_click=_aim, disabled=off < 3)
-    sb.caption("The densest azimuth moves through the evening, so this aims "
-               "once rather than following it.")
+    sb.caption("The fullest %d degree window at this minute, for this model. "
+               "It moves through the evening, so this aims once rather than "
+               "following it." % fov0)
 
 n_frames, dt_step, speeds, play_label = MOTION[mode]
 
