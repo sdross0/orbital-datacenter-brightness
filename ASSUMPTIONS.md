@@ -588,3 +588,118 @@ sweeps from due south at sunset toward the northwest, and a fixed SSW camera
 keeps it in frame across all four epochs. Panning to follow the ring would
 have been easier to look at and less honest. The frame shows roughly a sixth
 of the sky; the counters report the whole sky.
+
+# Revision 4, 16 August 2026: the season, and two model bugs
+
+Building an interactive version of the simulation, which lets anyone pick a
+latitude, date and time rather than fixing them at Blacksburg and an equinox,
+turned up one substantive result and two defects in the sky model. All three
+are recorded here because two of them change published claims.
+
+## 4.1 The seasonal swing is the largest effect in this repository
+
+Every earlier table is for an equinox. The equinox turns out to sit close to
+the quietest point of the year for the mitigated case, so quoting it alone
+was misleading.
+
+Whole sky, 37.2 N, dark site, each model at its own peak:
+
+| date | unmitigated | mitigated | stars | mitigated / stars |
+|---|---|---|---|---|
+| Mar equinox | 37,568 | 1,334 | 2,527 | 0.5 |
+| Jun solstice | 759 | 0 | 917 | 0 |
+| Sep equinox | 37,803 | 1,401 | 2,376 | 0.6 |
+| Dec solstice | 62,272 | 13,745 | 2,602 | 5.3 |
+
+Between about 13 April and 30 August the mitigated case never becomes visible
+at all at this latitude, and the transition at each end takes under two weeks:
+258 satellites on 2 April, 69 on 8 April, zero by 14 April. From October
+through February it exceeds the stars, by about five to one at the solstice,
+and stays visible for close to three hours instead of forty minutes.
+Reproduce with `seasonal.py`.
+
+**Mechanism.** A dawn-dusk sun-synchronous orbit is fixed relative to the
+day-night line but not relative to the Sun's declination, so the
+Sun-satellite-observer phase angle swings through the year. Over the satellites
+actually visible at each peak:
+
+| date | minimum phase | median phase |
+|---|---|---|
+| Sep equinox | 94 deg | 122 deg |
+| Dec solstice | 11 deg | 55 deg |
+
+The Mallama Gen2 Mini phase function is 3.64 mag at 10 degrees and 8.03 mag at
+90, a factor of about 58 in flux, so a constellation seen at solstice geometry
+is being lit in the part of the curve where it is dramatically brighter. The
+Lambertian sphere of Boley et al. has a much weaker phase dependence, which is
+why the two columns move by very different factors across the year.
+
+**What this changes.** The claim that the optimistic mitigated case never
+approaches the star count, made in earlier versions of the README and in the
+11 August LinkedIn post, is true at an equinox and false for roughly half the
+year. It has been corrected in the README.
+
+**What it does not change.** Nothing in the unmitigated column, and nothing
+about the equinox figures themselves, which remain correct for their date.
+
+## 4.2 Earth's shadow and the Belt of Venus never faded (skymodel.py)
+
+`skymodel.brightness` applied the solar glow term with a twilight factor that
+reaches zero when the Sun is 18 degrees down, but applied the Earth-shadow
+darkening and the Belt of Venus brightening with no such factor. Two hours
+after sunset, with the Sun 22 degrees down, the model still drew a shadow edge
+and a bright rim above it near 60 degrees altitude, with a pink tint from the
+matching term in `colour`.
+
+This is wrong for a physical reason, not just a cosmetic one: the shadow and
+the belt are visible only because there is sunlit air to cast a shadow on.
+Past the end of astronomical twilight the whole sky is inside the shadow.
+Both terms now carry the same twilight factor as the glow.
+
+**Effect on published results: none that is measurable.** Both terms act only
+in the anti-solar sky, weighted by `clip((theta - 90) / 60, 0, 1)`. The
+published video faces northwest, toward the Sun's side, where that weight
+reaches at most 0.185 across the frame. Recomputing the video's on-screen
+counts with and without the fix moves them by 0 to 0.3 percent. Pointed east
+the error would have been obvious, which is luck rather than care. The
+whole-sky counts never used this module at all: they take sky brightness from
+`twilight.py`, at the zenith.
+
+## 4.3 The renderer ignored the Sun's declination (frame.py)
+
+`frame.sun_altaz` and `frame.render` both called `L.sun_dir(0.0)`, hard-coding
+an equinox, while `frame.DEC` was set by callers and never read. Any rendered
+frame for a date away from an equinox therefore used equinox lighting for both
+the sky brightness and the satellite illumination.
+
+**Effect on published results: none.** The video is a September equinox
+render, where the true declination is 0.005 degrees. Every seasonal figure in
+section 4.1 comes from `peak_minutes` and `whole_sky_count`, which compute
+their own solar position and were never affected.
+
+`DEC` now defaults to 0.0 at module level, so the video pipeline is unchanged.
+
+## 4.4 Star counts were about ten percent high
+
+Earlier tables counted stars from the isotropic synthetic sky in `stars.py`,
+which spreads the standard whole-sky tabulation evenly over the hemisphere.
+Counting real stars from the HYG catalogue at the actual date and latitude
+gives about ten percent fewer above the horizon: 2,565 rather than 2,831 at
+full dark from Blacksburg at the equinox. `counts_twilight.py` now uses the
+catalogue. No satellite number depends on this.
+
+## 4.5 Limitations the interactive version adds
+
+- **Artificial skyglow across the dome.** The Bortle setting is a zenith value
+  carried outward with the same geometry as airglow. A real light dome is not
+  axisymmetric; it points at whatever town is nearest. Treat the Bortle
+  control as indicative.
+- **The panorama is a storage format.** The whole sky is rendered in altitude
+  and azimuth and reprojected to a correct perspective view in the browser.
+  The reprojection was checked against `frame.py` and agrees to better than a
+  third of a pixel, but the panorama's own resolution, about 11 pixels per
+  degree at the standard setting, sets the sharpness of what you see.
+- **Counts shown in the viewer are sampled.** The figure that follows the view
+  as you drag comes from a thinned sample of the visible satellites, scaled
+  back up. It carries sampling noise at small numbers. The whole-sky figures
+  beside the picture are exact.

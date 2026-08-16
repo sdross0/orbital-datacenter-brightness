@@ -36,6 +36,13 @@ H_AIRGLOW = 90.0                 # km, emitting layer height                 # m
 BELT_MAG = 0.55                  # Belt of Venus enhancement
 SHADOW_MAG = 0.85                # darkening inside Earth's shadow
 
+# Artificial skyglow at the zenith, mag/arcsec2, or None for a pristine site.
+# Set this and every consumer of brightness() follows: the rendered sky gets
+# brighter, the local naked-eye limit rises, and satellites and stars that no
+# longer beat the sky stop being drawn. Keeping it here rather than in frame.py
+# is what makes the picture and the count agree under light pollution.
+SQM_ART = None
+
 
 def airmass(alt_rad):
     """Kasten-Young, floored at 2 deg so it stays finite below the horizon."""
@@ -82,22 +89,48 @@ def brightness(alt, az, sun_alt_deg, sun_az_rad):
     twi = np.clip((sun_alt_deg + 18.0) / 18.0, 0.0, 1.0)
     S = S0 - A_SUN * twi * np.exp(-theta / THETA0) + airglow(alt)
 
-    # anti-solar: Earth's shadow below its top, Belt of Venus just above
+    # anti-solar: Earth's shadow below its top, Belt of Venus just above.
+    #
+    # Both fade with the same twilight factor as the solar glow, and that is
+    # not cosmetic. The shadow and the belt are only visible because there is
+    # sunlit air to cast a shadow on. Once the Sun is 18 degrees down there is
+    # no scattered sunlight left anywhere, the whole sky is inside the shadow,
+    # and a rising edge with a bright rim above it is a leftover from an
+    # earlier hour rather than anything in the sky. Without this the belt term
+    # kept brightening a band near 60 degrees altitude hours after sunset.
     h = shadow_height(sun_alt_deg)
     anti = np.clip((theta - 90.0) / 60.0, 0.0, 1.0)          # 0 near Sun, 1 opposite
     e = alt / DEG
     inside = np.clip((h - e) / 4.0, 0.0, 1.0)
     belt = np.exp(-((e - h - 4.0) / 5.0) ** 2)
-    S = S + anti * (SHADOW_MAG * inside - BELT_MAG * belt)
+    S = S + twi * anti * (SHADOW_MAG * inside - BELT_MAG * belt)
+
+    # Artificial skyglow, added in linear flux. It is given as a zenith value
+    # and carried across the dome with the same geometry as airglow: scattered
+    # from a low layer, so it brightens toward the horizon and is then dimmed
+    # again by extinction. That shape is approximate. A real light dome is not
+    # axisymmetric, since it points at whatever town is nearest.
+    if SQM_ART is not None:
+        S = T.add_glow(S, SQM_ART + airglow(alt))
     return S, theta
 
 
 def colour(theta, alt, sun_alt_deg):
-    """RGB hue of the twilight sky. Warm toward the Sun and toward the horizon."""
-    warm = np.exp(-theta / 46.0) * np.clip(1.0 - alt / (35 * DEG), 0.0, 1.0)
+    """
+    RGB hue of the twilight sky. Warm toward the Sun and toward the horizon.
+
+    Both warm terms fade with twilight, for the same reason the shadow does.
+    A dark sky is not orange in the west; the residual left on the warm term
+    is atmospheric reddening of what light there is near the horizon, which
+    does survive the night.
+    """
+    twi = np.clip((sun_alt_deg + 18.0) / 18.0, 0.0, 1.0)
+    warm = (np.exp(-theta / 46.0) * np.clip(1.0 - alt / (35 * DEG), 0.0, 1.0)
+            * (0.15 + 0.85 * twi))
     h = shadow_height(sun_alt_deg)
     e = alt / DEG
-    belt = np.exp(-((e - h - 4.0) / 6.0) ** 2) * np.clip((theta - 100.0) / 60.0, 0, 1)
+    belt = (np.exp(-((e - h - 4.0) / 6.0) ** 2)
+            * np.clip((theta - 100.0) / 60.0, 0, 1) * twi)
     day = np.array([0.42, 0.55, 1.00])       # scattered blue
     dusk = np.array([1.00, 0.62, 0.34])      # sunset orange
     pink = np.array([1.00, 0.68, 0.72])      # Belt of Venus

@@ -17,6 +17,7 @@ W, H = 1672, 940
 HFOV, AZ0, EL0 = 95.0, 315.0, 25.0
 LAT = 37.23
 RA_SUN = 12.0                      # September equinox
+DEC = 0.0                          # solar declination, deg. 0 is an equinox.
 SUNSET_LST = 18.0
 
 
@@ -57,7 +58,7 @@ def sun_altaz(mins):
     """Sun position at `mins` after sunset, from the same geometry as lsm."""
     lst = SUNSET_LST + mins / 60.0
     r_obs, up, east, north = L.observer(LAT, lst)
-    s = L.sun_dir(0.0)
+    s = L.sun_dir(DEC)
     return (np.degrees(np.arcsin(np.clip(s @ up, -1, 1))),
             np.arctan2(s @ east, s @ north) % (2 * np.pi))
 
@@ -117,7 +118,7 @@ def render(mins, model="boley", cons=None, scale=1.0, sat_gain=1.0,
     n_vis = 0
     if cons is not None:
         r_obs, up, east, north = L.observer(LAT, lst)
-        sdir = L.sun_dir(0.0)
+        sdir = L.sun_dir(DEC)
         offs = ([0.0] if nsub <= 1 else
                 np.linspace(-dt_sky / 2, dt_sky / 2, nsub))
         for c in cons:

@@ -13,8 +13,14 @@ Rein 2026, which are stricter than the ones used in counts.py:
     - V < 5 rather than V < 6
     - counts only shown once the Sun is 6 degrees or more below the horizon
 
-Requires numpy and stars.py. See twilight.py for the caveats, which are
-substantial. In particular the sky brightness is for the ZENITH.
+Stars are counted from the real HYG catalogue at the actual date and
+latitude, not from the isotropic synthetic sky in stars.py. The synthetic
+sky assumes stars are spread evenly over the hemisphere, which overcounts
+what is actually above the horizon from Blacksburg at the equinox by about
+ten percent. Only the star column is affected.
+
+Requires numpy. See twilight.py for the caveats, which are substantial. In
+particular the sky brightness is for the ZENITH.
 
     python3 counts_twilight.py            natural sky, dark site
     python3 counts_twilight.py 4          Bortle 4 skyglow
@@ -24,9 +30,10 @@ import sys
 import numpy as np
 import lsm as L
 import twilight as T
-import stars as ST
+import realstars as RS
 
 N_SATS, LAT, DEC = 500_000, 37.23, 0.0
+RA_SUN = 12.0                        # September equinox, hours
 STEP_HR, N_STEP = 0.125, 25          # 7.5 minute steps, out to 3 hours
 ALT_MIN = np.radians(10.0)           # Boley et al. elevation cut
 V_BOLEY = 5.0                        # Boley et al. magnitude cut
@@ -37,8 +44,6 @@ def main(bortle=1):
     sqm_art = T.BORTLE[bortle]
     cons = L.build_sso(N_SATS, relax_deg=10.0)
     scale = N_SATS / L.total_of(cons)
-    alt_s, az_s, mag_s = ST.sample_sky(m_limit=7.5)
-    V_star = mag_s + L.K_EXT * L.airmass(alt_s)
     s = L.sun_dir(DEC)
 
     print("Blacksburg, equinox. %s satellites. Bortle %d%s."
@@ -57,6 +62,9 @@ def main(bortle=1):
         sqm = float(T.add_glow(T.sky_brightness(el), sqm_art))
         vlim = float(T.nelm(el, sqm_art))
         r_obs, up, east, north = L.observer(LAT, lst)
+        s_alt, s_az, s_mag, _ = RS.sky(lst, RA_SUN, LAT)
+        up_now = s_alt > 0
+        V_star = s_mag[up_now] + L.K_EXT * L.airmass(s_alt[up_now])
         ns = int((V_star < vlim).sum())
         res = {}
         for model in ("boley", "mini"):

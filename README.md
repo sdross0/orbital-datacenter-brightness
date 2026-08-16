@@ -31,15 +31,15 @@ only reaches its dark-sky value about 90 minutes later.
 | after sunset | sun el | V limit | unmitigated | mitigated | stars | |
 |---|---|---|---|---|---|---|
 | 0 min | 0.0 | -6.90 | 0 | 0 | 0 | *sunset* |
-| 30 min | -6.0 | -0.64 | 151 | 0 | 1 | *first satellite appears* |
-| 45 min | -8.9 | 2.37 | 12,522 | 0 | 25 | |
-| 62 min | -12.3 | 5.39 | 36,136 | 147 | 835 | *mitigated case appears* |
-| 70 min | -13.9 | 6.02 | **37,798** | 692 | 1,658 | *unmitigated peak* |
-| 80 min | -15.8 | 6.41 | 36,308 | **1,405** | 2,598 | *mitigated peak* |
-| 106 min | -20.8 | 6.48 | 24,639 | 10 | 2,831 | *mitigated case gone* |
-| 120 min | -23.5 | 6.48 | 18,569 | 0 | 2,831 | |
-| 150 min | -29.0 | 6.48 | 8,899 | 0 | 2,831 | |
-| 198 min | -37.3 | 6.48 | 104 | 0 | 2,831 | *unmitigated gone* |
+| 30 min | -6.0 | -0.64 | 151 | 0 | 0 | *first satellite appears* |
+| 45 min | -8.9 | 2.37 | 12,522 | 0 | 13 | |
+| 62 min | -12.3 | 5.39 | 36,136 | 147 | 756 | *mitigated case appears* |
+| 70 min | -13.9 | 6.02 | **37,798** | 692 | 1,539 | *unmitigated peak* |
+| 80 min | -15.8 | 6.41 | 36,308 | **1,405** | 2,376 | *mitigated peak* |
+| 106 min | -20.8 | 6.48 | 24,639 | 10 | 2,565 | *mitigated case gone* |
+| 120 min | -23.5 | 6.48 | 18,569 | 0 | 2,563 | |
+| 150 min | -29.0 | 6.48 | 8,899 | 0 | 2,564 | |
+| 198 min | -37.3 | 6.48 | 104 | 0 | 2,579 | *unmitigated gone* |
 
 Four things follow.
 
@@ -56,9 +56,12 @@ mitigated case is visible for only about 44 minutes, from 62 to 106 minutes.
 minutes, the mitigated case at 80, because the second is still being uncovered
 by the darkening sky when the first has already begun to be eclipsed.
 
-**The mitigated case never reaches the stars.** Its maximum of about 1,405 is
-roughly half the 2,831 stars visible once the sky is fully dark. The unmitigated
-case exceeds the stars by more than ten to one at peak.
+**At the equinox the mitigated case stays below the stars.** Its maximum of
+about 1,405 is a little over half the 2,565 stars visible once the sky is fully
+dark. The unmitigated case exceeds the stars by more than ten to one at peak.
+This is an equinox result and it does **not** hold through the year. See the
+seasonal table below, which is the strongest reason not to quote a single
+number for the mitigated case.
 
 Under the stricter reporting conventions of Boley, Lawler & Rein (satellites
 above 10 degrees elevation, V < 5, counts shown only once the Sun is 6 degrees
@@ -78,13 +81,78 @@ contrast sharper rather than softer, since it erases the faint mitigated
 satellites entirely while the bright unmitigated ones survive and the stars
 fade fastest of all; `python3 counts_twilight.py 4` runs a Bortle 4 site.
 
-### Earlier version of this table
+## The season matters more than anything else in this repository
+
+Every table above is for an equinox, which turns out to be close to the
+quietest time of year. Running the same calculation month by month, whole sky
+from Blacksburg under a dark sky, at each model's own peak:
+
+| date | unmitigated | mitigated | stars | mitigated / stars | mitigated visible |
+|---|---|---|---|---|---|
+| Jan | 63,523 | 12,165 | 2,192 | 5.6 | 52 to 160 min |
+| Feb | 54,458 | 6,564 | 2,495 | 2.6 | 50 to 132 min |
+| Mar equinox | 37,568 | 1,334 | 2,527 | 0.5 | 62 to 104 min |
+| Apr 20 | 16,965 | 0 | 1,086 | 0 | none |
+| May 21 | 2,648 | 0 | 1,160 | 0 | none |
+| Jun solstice | 759 | 0 | 917 | 0 | none |
+| Jul 22 | 2,883 | 0 | 1,310 | 0 | none |
+| Aug 22 | 17,483 | 0 | 1,110 | 0 | none |
+| Sep equinox | 37,803 | 1,401 | 2,376 | 0.6 | 62 to 106 min |
+| Oct | 55,853 | 6,987 | 2,350 | 3.0 | 50 to 134 min |
+| Nov | 63,439 | 12,308 | 2,087 | 5.9 | 52 to 162 min |
+| Dec solstice | 62,272 | **13,745** | 2,602 | **5.3** | 54 to 172 min |
+
+Reproduce with `python3 seasonal.py`, or `python3 seasonal.py 55` for another
+latitude. Each row is one date; the months are sampled, not averaged.
+
+The mitigated case falls to zero between about **13 April and 30 August** at
+this latitude, and it does not fade out gently: it drops from 258 on 2 April
+to 69 on 8 April to nothing by 14 April, and comes back just as fast at the
+end of August.
+
+**This corrects a claim made in earlier versions of this file and in the
+LinkedIn post.** The statement that the optimistic mitigated case never
+approaches the star count is true at an equinox and false for roughly half the
+year. Near the December solstice it outnumbers the stars by about five to one,
+and it stays visible for close to three hours rather than forty minutes.
+
+The mechanism is phase angle. A dawn-dusk sun-synchronous orbit fixes the
+satellites relative to the day-night line, but not relative to the Sun's
+declination, so the Sun-satellite-observer angle swings through the year. Near
+a solstice the satellites are front-lit at small phase angles, where the
+measured Gen2 Mini phase function is several magnitudes brighter than at the
+side-lit angles of an equinox. The idealized Lambertian sphere has a far weaker
+phase dependence, which is why the unmitigated column moves by a factor of
+about 80 across the year while the mitigated column moves from zero to 13,745.
+
+Two things follow that matter more than the equinox numbers.
+
+**The optimistic case is not a floor.** It is a reference case computed at one
+geometry, and its own seasonal range is larger than the gap between the two
+models at an equinox. Any single quoted value for it, including the 1,405 in
+the table above, is a statement about one date.
+
+**The quiet half of the year is quiet for a reason that will not last.** From
+April to August the satellites spend most of the night in Earth's shadow at
+this latitude. That is a property of the altitudes in the current filing, not a
+general protection: the eclipse threshold for a dawn-dusk sun-synchronous ring
+is 1,391 km, and a constellation placed above it would not have a quiet season.
+
+### Earlier versions of this table
+
+**Star counts, corrected.** Earlier versions counted stars from the isotropic
+synthetic sky in `stars.py`, which spreads the standard whole-sky tabulation
+evenly over the hemisphere. That overcounts what is really above the horizon
+from Blacksburg at this date by about ten percent, and the dark-sky figure has
+moved from 2,831 to 2,565. `counts_twilight.py` now counts real stars from the
+HYG catalogue at the actual date and latitude. Only the star column changed;
+no satellite number in this repository depends on it.
 
 The first published version applied a flat V < 6 at every epoch and reported
 66,300 at sunset. That is a *dark-sky* threshold, and applying it during bright
 twilight credits the satellites with a detection limit the sky does not permit.
-This improvement was siggested by @Obserfessor on X, and now impemented. `counts.py` still reproduces those
-figures, which remain valid as counts of satellites brighter than V = 6; it was
+This improvement was suggested by @Obserfessor on X, and is now implemented.
+`counts.py` still reproduces those figures, which remain valid as counts of satellites brighter than V = 6; it was
 the phrase "visible to the naked eye" that did not hold at the early epochs.
 The correction relocates the result rather than shrinking it.
 
@@ -143,6 +211,16 @@ Requires Python 3 and NumPy.
 python3 counts_twilight.py      # the table above
 python3 counts_twilight.py 4    # same, for a Bortle 4 site
 python3 counts.py               # the earlier flat V < 6 version
+python3 seasonal.py             # the same peak, month by month
+python3 seasonal.py 55          # any latitude
+```
+
+There is also an interactive version, which renders the whole sky for any
+latitude, date and time and lets you drag it around in a browser:
+
+```
+pip install -r requirements.txt
+streamlit run app.py
 ```
 
 `counts.py` also prints the min and max over ten minutes of orbital phase, so
@@ -157,7 +235,9 @@ table above are real, not sampling noise.
 | `lsm.py` | photometry, orbit propagation, both brightness models |
 | `counts.py` | reproduces the table |
 | `counts_twilight.py` | the same counts with an epoch-dependent naked-eye limit |
+| `seasonal.py` | the same peak month by month, at any latitude |
 | `figure_evening.py` | the figure above |
+| `solar.py` | solar declination and right ascension, and sunset for a latitude |
 | `skymodel.py` | twilight sky brightness over the whole dome |
 | `realstars.py`, `hyg_naked_eye.npz` | 8,913 real naked-eye stars, HYG database |
 | `frame.py` | composes one ground frame: sky, stars, satellites |
@@ -167,6 +247,10 @@ table above are real, not sampling noise.
 | `stars.py` | naked-eye star counts, from the standard catalogue tabulation |
 | `spacing.py` | satellite-to-satellite spacing, three ways |
 | `sensitivity.py` | how the counts move under a systematic brightness error |
+| `app.py` | the interactive version, for any latitude, date and time |
+| `pano.py` | the whole dome as one panorama, for the app |
+| `viewer.py` | the browser viewer: drag to look around, play the motion |
+| `sky_view.py` | the app's bridge to the same physics the video uses |
 | `ASSUMPTIONS.md` | every assumption, its provenance, and what is not modeled |
 
 The ground renderer **is** included: `skymodel.py`, `realstars.py`, `frame.py`

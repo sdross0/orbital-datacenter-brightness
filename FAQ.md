@@ -62,11 +62,50 @@ threshold. Correcting for how bright the twilight sky actually is
 (`twilight.py`), nothing is visible in either case for roughly the first 25
 minutes after sunset. The unmitigated count then climbs to a peak near 68
 minutes and is still around 18,000 two hours out, reaching zero at about
-3 hours 20 minutes. The mitigated count never exceeds about 1,300, which is
-fewer than the stars visible at the same moment, and is gone by two hours.
+3 hours 20 minutes. At an equinox the mitigated count never exceeds about
+1,400, which is fewer than the stars visible at the same moment, and is gone
+by two hours.
 
 So the effect does not land at sunset, when nobody could see it anyway. It
 lands in the window when the sky is dark enough to observe.
+
+Note the words "at an equinox". That turns out to matter a great deal, and
+not in the direction I first assumed. See the next question.
+
+## Does the time of year matter?
+
+More than anything else in this analysis, and I had this wrong until August.
+
+Every number quoted above is for an equinox, which is close to the quietest
+point of the year for the mitigated case. Whole sky from Blacksburg, each
+model at its own peak:
+
+| date | unmitigated | mitigated | stars | mitigated visible for |
+|---|---|---|---|---|
+| Mar equinox | 37,568 | 1,334 | 2,527 | 42 min |
+| Jun solstice | 759 | 0 | 917 | not at all |
+| Sep equinox | 37,803 | 1,401 | 2,376 | 44 min |
+| Dec solstice | 62,272 | **13,745** | 2,602 | **118 min** |
+
+Between about 13 April and 30 August the mitigated case is never visible at
+all from this latitude, because those satellites spend the night in Earth's
+shadow. From October through February it exceeds the star count, by roughly
+five to one near the December solstice, and stays up for close to three hours
+rather than forty minutes.
+
+The mechanism is phase angle. A dawn-dusk orbit is fixed relative to the
+day-night line but not relative to the Sun's declination, so the
+Sun-satellite-observer angle swings through the year. Near a solstice the
+satellites are nearly front-lit, at phase angles around 11 degrees, where the
+measured Gen2 Mini phase function is 3.64 magnitudes; near an equinox they are
+side-lit at 94 degrees or more, where it is 8.03. That is a factor of about 58
+in reflected light, and it falls almost entirely on the mitigated column
+because the idealized Lambertian sphere has a much weaker phase dependence.
+
+**This corrects something I said publicly.** I described the optimistic case
+as staying below the star count. It does at an equinox. It is not a floor, and
+its own seasonal range is larger than the gap between the two models on the
+date the video shows. Run `seasonal.py` to reproduce the table.
 
 ## Why do they go dark at all? I thought sun-synchronous orbits stay lit.
 
