@@ -53,6 +53,30 @@ document states the goal as making its satellites "invisible to the naked
 eye when they are on station serving users." The metric used here is theirs,
 not one invented for this simulation.
 
+## Wouldn't a long exposure show far more of them?
+
+Fewer than you would expect, and this is the opposite of most people's
+intuition about cameras.
+
+A star holds still. A satellite does not: at the rates in these frames a
+typical visible one crosses the sky at about 0.2 degrees per second, so in a
+30 second exposure it draws a streak roughly 5 degrees long. The light that
+would have piled up in one spot is smeared along that streak instead, and any
+given pixel is only illuminated for the time the satellite takes to cross it,
+about 30 milliseconds. Opening the shutter longer makes the trail longer. It
+does not make it brighter.
+
+So a 30 second frame goes several magnitudes deeper on stars and hardly any
+deeper on satellites. Matched filtering along a known trail recovers some of
+the loss, but nothing like the depth a static point source gets. The practical
+consequence is that a photograph of this sky would show a *lower* ratio of
+satellites to stars than the naked eye sees, not a higher one.
+
+This is why the counts here are naked-eye counts and why that is the harder
+test rather than the softer one. It is also why the renders show points rather
+than trails: they are instantaneous, which is what an eye integrating over
+roughly a tenth of a second sees, not what a camera records.
+
 ## Isn't this only a twilight problem?
 
 It is a *late* twilight problem, which is not the same thing.
@@ -87,6 +111,8 @@ model at its own peak:
 | Sep equinox | 37,803 | 1,401 | 2,376 | 44 min |
 | Dec solstice | 62,272 | **13,745** | 2,602 | **118 min** |
 
+*Mitigated equinox figures in this table are single-realisation values and carry about 30% scatter from the random placement of orbital planes; read them as one significant figure. See section 5.2 of ASSUMPTIONS.md.*
+
 Between about 13 April and 30 August the mitigated case is never visible at
 all from this latitude, because those satellites spend the night in Earth's
 shadow. From October through February it exceeds the star count, by roughly
@@ -106,6 +132,38 @@ because the idealized Lambertian sphere has a much weaker phase dependence.
 as staying below the star count. It does at an equinox. It is not a floor, and
 its own seasonal range is larger than the gap between the two models on the
 date the video shows. Run `seasonal.py` to reproduce the table.
+
+## It's a ring seen edge-on. Won't they all sit on the horizon?
+
+Partly. They do pile up low: from 37 N at an equinox the median visible
+satellite is about 16 degrees above the horizon, which is roughly a fist and a
+half at arm's length.
+
+But the tail is long. Nearly a fifth are more than 30 degrees up, and near the
+December solstice a quarter are, and the ring reaches the zenith. "On the
+horizon" describes where most of them are, not where they stop.
+
+The optimistic column runs the other way, which surprises most people. Its
+median is 40 degrees and essentially none of it is below 10. A faint satellite
+only clears the naked-eye limit when it is close, and close means overhead,
+since range and atmospheric extinction both punish the low ones. **The better
+the mitigation, the higher in the sky the survivors sit.** If mitigation works,
+what remains is not a band near the horizon you can turn away from.
+
+Run `elevation.py` for the full distribution.
+
+## What single assumption here is most likely to be wrong?
+
+The spread of the orbital planes in node. Everything else about the
+constellation comes from SpaceX's filing; that one is inherited from Boley et
+al.'s "relaxed" case at +/- 10 degrees, while SpaceX filed +/- 30.
+
+It barely touches the unmitigated column and it moves the mitigated column by
+about a factor of twelve at an equinox. It also damps the seasonal swing: at
++/- 10 the optimistic case is roughly twelve times larger at the December
+solstice than at an equinox, and at the filed +/- 30 it is only about 1.5 times
+larger. Run `raan_sensitivity.py`, and see section 5.1 of ASSUMPTIONS.md for
+what that does to claims made in earlier versions of this repository.
 
 ## Why do they go dark at all? I thought sun-synchronous orbits stay lit.
 

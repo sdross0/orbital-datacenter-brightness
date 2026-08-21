@@ -57,11 +57,19 @@ minutes, the mitigated case at 80, because the second is still being uncovered
 by the darkening sky when the first has already begun to be eclipsed.
 
 **At the equinox the mitigated case stays below the stars.** Its maximum of
-about 1,405 is a little over half the 2,565 stars visible once the sky is fully
+about 1,400 is a little over half the 2,565 stars visible once the sky is fully
 dark. The unmitigated case exceeds the stars by more than ten to one at peak.
 This is an equinox result and it does **not** hold through the year. See the
 seasonal table below, which is the strongest reason not to quote a single
 number for the mitigated case.
+
+**Read that 1,400 as one significant figure.** The orbital planes draw their
+nodes at random from the assumed spread, and there are only about a hundred of
+them, so the sampling itself moves the mitigated equinox figure: over five
+realisations it runs 835 to 1,766, mean 1,186. Earlier versions of this file
+quoted 1,405 to four digits, which the method does not support. The unmitigated
+column is steady to about 2% and is not affected in the same way. See
+`raan_sensitivity.py` and section 5.2 of ASSUMPTIONS.md.
 
 Under the stricter reporting conventions of Boley, Lawler & Rein (satellites
 above 10 degrees elevation, V < 5, counts shown only once the Sun is 6 degrees
@@ -138,6 +146,56 @@ this latitude. That is a property of the altitudes in the current filing, not a
 general protection: the eclipse threshold for a dawn-dusk sun-synchronous ring
 is 1,391 km, and a constellation placed above it would not have a quiet season.
 
+### How much of this swing is the plane spread?
+
+A large part of it, and this qualifies the table above. The satellites here are
+spread +/- 10 degrees in node, the "relaxed" case in Boley et al.; SpaceX filed
++/- 30. A tight ring holds every satellite near one phase-angle geometry, which
+then swings hard with the Sun's declination. A wide ring spreads them over many
+phase angles at once, so some subset is always favourably lit and the season
+matters much less. Mitigated peak, whole sky, averaged over five plane
+realisations:
+
+| RAAN spread | equinox | December solstice | ratio |
+|---|---|---|---|
+| +/- 10 deg (used here) | 1,200 | 14,000 | 12 |
+| +/- 30 deg (filed) | 5,600 | 8,300 | 1.5 |
+
+So "about ten times its equinox value at the solstice" is a statement about the
+spread modelled here, not about the filing. The April-to-August disappearance is
+eclipse geometry rather than phase angle and survives the wider spread, but the
+size of the winter peak does not.
+
+Taking both the spread and the season together, the mitigated case runs from
+roughly 500 to roughly 15,000 and has no single value. That is a wider
+uncertainty than earlier versions of this file admitted. Reproduce with
+`raan_sensitivity.py`; the full argument is in section 5.1 of ASSUMPTIONS.md.
+
+## How high in the sky are they?
+
+The commonest objection to these results is that a sun-synchronous ring is seen
+nearly edge-on from the ground, so it hugs the horizon and leaves the sky
+overhead alone. The first half is right.
+
+| | equinox, no mitigation | equinox, optimistic | solstice, no mitigation | solstice, optimistic |
+|---|---|---|---|---|
+| median elevation | 16.1 deg | 40.0 deg | 19.2 deg | 40.6 deg |
+| above 30 deg | 18.6% (7,020) | 84.5% (1,185) | 26.3% (16,369) | 77.9% (10,705) |
+| above 60 deg | 1.6% (620) | 7.8% (109) | 4.2% (2,605) | 17.2% (2,366) |
+| highest | 83.3 deg | 69.6 deg | 89.6 deg | 89.3 deg |
+
+They do pile up low, and the median is only 15 to 20 degrees. But the tail is
+long: roughly a fifth to a quarter sit more than 30 degrees up, and near the
+December solstice the ring reaches the zenith.
+
+The counter-intuitive column is the optimistic one. **The better the mitigation,
+the higher the survivors sit.** A faint satellite only clears the naked-eye
+threshold when it is close, and close means overhead, since range and
+extinction both punish the low ones. So the optimistic case is almost entirely a
+high-sky population, median 40 degrees, with essentially nothing below 10. If
+mitigation works, what is left is not a glow near the horizon you can turn away
+from. Reproduce with `elevation.py`.
+
 ### Earlier versions of this table
 
 **Star counts, corrected.** Earlier versions counted stars from the isotropic
@@ -199,6 +257,12 @@ are additional modeling assumptions described below.
 Dawn-dusk orbits, LTAN 06:00 and 18:00, with a 10 degree RAAN spread, which
 is the "relaxed" case in Boley et al.
 
+**The spread is the one number here that is not SpaceX's.** Everything else in
+this table comes from the filing; the filed node tolerance is +/- 30 degrees and
+this repository uses +/- 10, inherited from Boley et al. rather than derived. It
+is the largest unforced assumption in the model and it changes the mitigated
+column by an order of magnitude. Run `raan_sensitivity.py` for the sweep.
+
 **Not included:** the approximately ~30 degree inclination shells in the same 
 supplement. These results therefore describe only the 500,000-satellite 
 sun-synchronous component, not the complete one-million-satellite filing.
@@ -213,6 +277,9 @@ python3 counts_twilight.py 4    # same, for a Bortle 4 site
 python3 counts.py               # the earlier flat V < 6 version
 python3 seasonal.py             # the same peak, month by month
 python3 seasonal.py 55          # any latitude
+python3 raan_sensitivity.py     # how much the plane spread matters
+python3 raan_sensitivity.py --dec
+python3 elevation.py            # how high in the sky they sit
 ```
 
 There is also an interactive version, which renders the whole sky for any
@@ -247,6 +314,8 @@ table above are real, not sampling noise.
 | `stars.py` | naked-eye star counts, from the standard catalogue tabulation |
 | `spacing.py` | satellite-to-satellite spacing, three ways |
 | `sensitivity.py` | how the counts move under a systematic brightness error |
+| `raan_sensitivity.py` | how the counts move with the assumed plane spread |
+| `elevation.py` | the distribution of elevation angle, low sky against high |
 | `app.py` | the interactive version, for any latitude, date and time |
 | `pano.py` | the whole dome as one panorama, for the app |
 | `viewer.py` | the browser viewer: drag to look around, play the motion |

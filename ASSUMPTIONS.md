@@ -611,6 +611,8 @@ Whole sky, 37.2 N, dark site, each model at its own peak:
 | Sep equinox | 37,803 | 1,401 | 2,376 | 0.6 |
 | Dec solstice | 62,272 | 13,745 | 2,602 | 5.3 |
 
+*Mitigated equinox figures in this table are single-realisation values and carry about 30% scatter from the random placement of orbital planes; read them as one significant figure. See section 5.2 of ASSUMPTIONS.md.*
+
 Between about 13 April and 30 August the mitigated case never becomes visible
 at all at this latitude, and the transition at each end takes under two weeks:
 258 satellites on 2 April, 69 on 8 April, zero by 14 April. From October
@@ -703,3 +705,122 @@ catalogue. No satellite number depends on this.
   as you drag comes from a thinned sample of the visible satellites, scaled
   back up. It carries sampling noise at small numbers. The whole-sky figures
   beside the picture are exact.
+
+# Revision 5, 21 August 2026: the orbital-plane spread, and how precise these numbers actually are
+
+Public questions after the Scientific American piece pushed on the one part of
+the constellation that is not taken from SpaceX's filing: how widely the
+orbital planes are spread in right ascension. Checking it properly turned up a
+result that qualifies Revision 4, and a second that qualifies almost every
+number in this repository. Both are recorded here because both weaken claims I
+have made in public.
+
+## 5.1 The plane spread is the largest unforced assumption here
+
+SpaceX filed a node tolerance of +/- 30 degrees. This repository has always
+used +/- 10, which is the "relaxed" case in Boley et al. That value was
+inherited from the paper rather than derived from the filing, and it was never
+justified on its own terms. It should have been checked before now.
+
+Whole sky, 37.2 N, dark site, each model at its own peak, averaged over five
+independent realisations of the plane layout:
+
+| RAAN spread | equinox unmitigated | equinox mitigated | solstice unmitigated | solstice mitigated |
+|---|---|---|---|---|
+| +/- 5 deg | 35,900 | 490 | 65,700 | 15,300 |
+| **+/- 10 deg (used here)** | **38,000** | **1,200** | **63,000** | **14,000** |
+| +/- 20 deg | 36,800 | 3,500 | 52,900 | 10,700 |
+| **+/- 30 deg (filed)** | **34,400** | **5,600** | **41,500** | **8,300** |
+
+Reproduce with `raan_sensitivity.py` and `raan_sensitivity.py --dec`.
+
+Two things follow, and the second is the important one.
+
+**At an equinox the spread barely touches the unmitigated case and dominates
+the mitigated one.** Across the full filed range the unmitigated count moves by
+a factor of 1.1 and the mitigated count by a factor of about 12. The reason is
+where each population sits relative to the naked-eye threshold, the same
+asymmetry documented in the brightness-error section above. Tightening the ring
+concentrates the satellites into less sky; for the bright population that trades
+area against density and roughly cancels, and for the faint population it does
+not, because only the satellites in a favourably lit patch clear the threshold
+at all.
+
+**The seasonal swing reported in Revision 4 is itself partly a consequence of
+this choice.** At the +/- 10 degrees used here the mitigated case runs from
+about 1,200 at an equinox to about 14,000 at the December solstice, a factor of
+twelve. At the filed +/- 30 degrees it runs from about 5,600 to about 8,300, a
+factor of 1.5. A tight ring holds every satellite near one phase-angle
+geometry, which then swings hard with the Sun's declination. A wide ring spreads
+them across many phase angles at once, so some subset is always favourably lit
+and the seasonal variation is damped.
+
+Revision 4 is not withdrawn. The seasonal effect is real at the configuration
+modelled, and the April-to-August disappearance is driven by eclipse geometry
+rather than phase angle and survives the wider spread. But the specific claim
+that the optimistic case near the December solstice is "about ten times its
+equinox value" is a statement about +/- 10 degrees, not about the filing, and I
+have repeated it in public without that qualification.
+
+The honest summary of the mitigated column is that across the filed range of
+plane spreads and across the year it runs from roughly 500 to roughly 15,000,
+and it has no single value. That is a wider uncertainty than this repository has
+previously admitted, and it does not narrow the gap between the two models so
+much as make the optimistic one harder to pin down. One published AI1 magnitude
+would still collapse it.
+
+## 5.2 Single-run figures were quoted far too precisely
+
+The filed configuration has roughly a hundred orbital planes, and each draws
+its node from the spread at random. A hundred draws is not many, so the
+sampling itself moves the answer.
+
+Over five realisations at the value used here, the September equinox mitigated
+peak is 1,186 with a standard deviation of 349, a range of 835 to 1,766 across
+the five. The figure 1,405 quoted throughout this repository is one realisation
+sitting near the top of that range. The unmitigated peak is far steadier, 2%,
+and the December solstice mitigated peak is steady too, 3%, because at the
+solstice most of the constellation clears the threshold and the details of
+plane placement stop mattering.
+
+So: **the mitigated equinox figure is good to about one significant figure, not
+four.** It should be read as "of order a thousand." Every four-digit mitigated
+equinox number in this repository, in the video overlay, and in what I have
+posted publicly carries that scatter and did not say so. The unmitigated
+figures and the solstice figures are not affected in the same way.
+
+This is a defect in how the results were reported rather than in the physics,
+but it is the kind of defect that matters most in a piece of work whose entire
+argument is the size of the gap between two columns.
+
+## 5.3 Elevation: the ring is low, but not only low
+
+The commonest objection to these results is that a sun-synchronous ring is seen
+nearly edge-on from the ground, so the satellites sit on the horizon and leave
+the sky overhead alone. The first half is right.
+
+Whole sky, 37.2 N, dark site, each model at its own peak:
+
+| | equinox, no mitigation | equinox, optimistic | solstice, no mitigation | solstice, optimistic |
+|---|---|---|---|---|
+| median elevation | 16.1 deg | 40.0 deg | 19.2 deg | 40.6 deg |
+| above 30 deg | 18.6% (7,020) | 84.5% (1,185) | 26.3% (16,369) | 77.9% (10,705) |
+| above 60 deg | 1.6% (620) | 7.8% (109) | 4.2% (2,605) | 17.2% (2,366) |
+| highest | 83.3 deg | 69.6 deg | 89.6 deg | 89.3 deg |
+
+Reproduce with `elevation.py`.
+
+They do pile up low, and the median is only about 15 to 20 degrees. But the
+distribution has a long tail, roughly a fifth to a quarter are more than 30
+degrees up, and near the December solstice the ring reaches the zenith. This is
+also why `pano.py` renders to 90 degrees rather than the 80 used earlier: at the
+solstice there is no hole at the top of the sky to leave out.
+
+The counter-intuitive column is the optimistic one. **The better the
+mitigation, the higher the survivors sit.** A faint satellite only clears the
+naked-eye threshold when it is close, and close means overhead, since both
+range and atmospheric extinction punish the low ones. So the optimistic case is
+almost entirely a high-sky population, median 40 degrees, with essentially
+nothing below 10. If mitigation works, what remains is not a glow around the
+horizon that you can look away from. It is directly above you, and there is
+less of it.
